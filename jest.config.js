@@ -17,9 +17,9 @@ module.exports = {
   verbose: true,
   //   coverageDirectory: './coverage',
   //   coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.test.json',
-    },
-  },
+  // globals: {
+  //   'ts-jest': {
+  //     tsconfig: 'tsconfig.test.json',
+  //   },
+  // },
 }
