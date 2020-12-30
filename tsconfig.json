@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "sourceMap": true,
+
+    "incremental": true,
+    "composite": true,
+
+    "lib": ["esnext"],
+    "skipLibCheck": true
+  }
+}

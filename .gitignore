@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+dist
+
+*.log
+
+.yarn/cache
+.yarn/install-state.gz
+.yarn/build-state.yml 
+
+tsconfig.tsbuildinfo
