@@ -34,53 +34,16 @@ const humansQuery: Selection<Query><string[]> = objects.query((t) => ({
   humans: t.humans(human.list),
 }))
 
-const searchQuery = o.query((t) =>
-  t.search({ query: 'ts-graphql' })(
-    o.search((s) => {
-      return {
-        id: s.id(),
-        name: s.name(),
-      }
-    }).list,
-  ),
-)
-
-const [result, error] = await gql.fetch(selection)
-```
-
----
-
-```ts
-import * as gql from 'ts-graphql'
-import { objects, o } from 'ts-graphql'
-
-const human: string = objects.human((t) => {
-  return `${t.firstname()} ${t.lastname()}`
-})
-
-/* Queries */
-
-const humansQuery = selection((t) => {
-  var id = t.select(o.human.id)
-  var name = t.select(o.human.name)
-
-  return { id, name }
-})
-
-const searchQuery = gql.o.query((t) => {
-  // Selection
-  let search = t.search(
-    o.search((s) => {
-      return {
-        id: s.id(),
-        name: s.name(),
-      }
-    }).list,
-  )
-
-  // Return
-  return search({ query: 'ts-graphql' })
-})
+// const searchQuery = o.query((t) =>
+//   t.search({ query: 'ts-graphql' })(
+//     o.search((s) => {
+//       return {
+//         id: s.id(),
+//         name: s.name(),
+//       }
+//     }).list,
+//   ),
+// )
 
 const [result, error] = await gql.fetch(selection)
 ```

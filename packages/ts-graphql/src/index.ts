@@ -1,21 +1,8 @@
-/* Schema */
+import { composite, Field, leaf } from './document/field'
 
-import { Field, leaf } from './document/field'
-
-const schema = /* graphql */ `
-  type Query {
-    hello: String!
-  }
-`
-
-type S<TypeLock> = { type: never }
-
-/* Manual code */
-
-type Response<TypeLock> =
-  | { type: 'fetching' }
-  | { type: 'fetched'; response: TypeLock }
-
+/**
+ * Collects the fields of a given document.
+ */
 class Fields<TypeLock> {
   /* State */
 
@@ -24,16 +11,17 @@ class Fields<TypeLock> {
 
   /* Accessors */
 
-  data(): TypeLock {
-    switch (this.response.type) {
-      /* Return null for mocking purposes. */
-      case 'fetching':
-        return null as any
+  data(): Response<TypeLock> {
+    return this.response
+    // switch (this.response.type) {
+    //   /* Return null for mocking purposes. */
+    //   case 'fetching':
+    //     return null as any
 
-      /* Return the actual data. */
-      case 'fetched':
-        return this.response.response
-    }
+    //   /* Return the actual data. */
+    //   case 'fetched':
+    //     return this.response.response
+    // }
   }
 
   /* Methods */
@@ -44,6 +32,39 @@ class Fields<TypeLock> {
   select(field: Field) {
     this.fields.push(field)
   }
+}
+
+type Response<TypeLock> =
+  | { type: 'fetching' }
+  | { type: 'fetched'; response: TypeLock }
+
+/**
+ * SelectionSet represents a link in a chain that
+ * selects the field of a parent using decoder and
+ * decodes the response using decoder.
+ *
+ * Decoder is the central place of query building and exectuion.
+ */
+type SelectionSet<TypeLock, Type> = {
+  /**
+   * Locks the type of a given seleciton.
+   */
+  readonly _typelock: TypeLock
+  /**
+   * We use decoder to generate selection given a top most Fields object
+   * and to decode response to desired type.
+   */
+  decoder: (fields: Fields<TypeLock>) => Type
+}
+
+/**
+ * Utility function for creating SelectionSet.
+ */
+function selection<TypeLock, Type>(
+  type: TypeLock,
+  decoder: (fields: Fields<TypeLock>) => Type,
+): SelectionSet<TypeLock, Type> {
+  return { _typelock: type, decoder }
 }
 
 // class SelectionSet<TypeLock, Type> {
@@ -69,29 +90,44 @@ class Fields<TypeLock> {
 //   return new SelectionSet<TypeLock, Type>(fn)
 // }
 
-type SelectionSet<TypeLock, Type> = {
-  _typelock: TypeLock
-  // _type: Type
-  decoder: (fields: Fields<TypeLock>) => Type
-}
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+/* "Generated" code */
 
-/* Generated code */
-
-type Object = {
-  Query: {
-    hello: string
-    humans: Object['Human'][]
+const schema = /* graphql */ `
+  type Query {
+    hello: String!
   }
-  Human: {
-    id: string
-    name: string
-  }
-}
+`
 
-type FieldTypes = {
+type S<TypeLock> = { type: never }
+
+/* Manual code */
+
+/**
+ * FieldTypes represent all the possible fields
+ * user may use to make a selection in a given type.
+ */
+type FieldsTypes = {
   Query: {
     hello: () => string
-    humans: <T>(selection: SelectionSet<Human, T>) => T[]
+    human: <T>(selection: SelectionSet<Object['Human'], T>) => T
+    // humans: <T>(selection: SelectionSet<Object['Human'], T>) => T[]
     // humans: (selection: Selection<Fields['Human'], any>) => any
   }
   Human: {
@@ -103,216 +139,103 @@ type FieldTypes = {
   }
 }
 
-type Query = { _type: 'Query' }
-
-function query<Type>(
-  fn: (fields: FieldTypes['Query']) => Type,
-): SelectionSet<Query, Type> {
-  /* Fields */
-  const fields = new Fields<Object['Query']>()
-
-  /* Selection */
-  const selection: FieldTypes['Query'] = {
-    hello: () => {
-      /* Selection */
-      fields.select(leaf('hello'))
-
-      /* Decoding */
-      return fields.data().hello
-    },
-    humans: <T>(selection: SelectionSet<Human, T>) => {
-      return fields.data().humans.map(selection.decoder)
-    },
-  }
-
-  return {
-    _typelock: { _type: 'Query' },
-    // _type: fn(selection),
-    decoder: fn,
-  }
-}
-
-type Human = { _type: 'Human' }
-
-function human<Type>(
-  fn: (fields: FieldTypes['Human']) => Type,
-): SelectionSet<Human, Type> {
-  /* Fields */
-  const fields = new Fields<Object['Human']>()
-
-  /* Selection */
-  const selection: FieldTypes['Human'] = {
-    /**
-     * Returns the id of a human.
-     */
-    id: () => {
-      /* Selection */
-      fields.select(leaf('id'))
-
-      /* Decoding */
-      return fields.data().id
-    },
-    name: () => {
-      /* Selection */
-      fields.select(leaf('name'))
-
-      /* Decoding */
-      return fields.data().name
-    },
-  }
-
-  return {
-    _typelock: { _type: 'Human' },
-    decoder: fn,
-  }
-}
-
-// function Query<T>(selection: F): Fields['Query'] {
-//   /* Hello */
-//   function hello(): string {
-//     /* Selection */
-//     selection.select(leaf('hello'))
-
-//     /* Decoding */
-//     return ''
-//   }
-
-//   return {
-//     hello,
-//   }
-// }
-
-// type Selection<TypeLock, ReturnType> = {
-//   lock: TypeLock
-//   return: ReturnType
-// }
-
-/* Namespace utility */
-
-// function query<T>(fn: (fields: Fields['Query']) => T): T {
-//   let fields = new F()
-//   return fn(Query(fields))
-// }
-
-// const SelectionSet = {
-//   query,
-//   // Human: humanSelection,
-// }
-
-/* Playground */
-
-// const human = SelectionSet.Human((t) => {
-//   return 'hey'
-// })
-
 /**
- * I don't want to have to specify return type every time I do this.
- * TS should infer the return type of the returning object from the selection.
- *
- * I think we need to reduce phantomness of the selection to achieve this.
+ * Holds information about all return types from the schema.
  */
-// const hu = human((t) => {
-//   return t.name()
-// })
-
-const pg = query((t) => {
-  return t.humans(human((t) => t.name()))
-})
-
-human((t) => {
-  t.id()
-})
-
-// const playground = query((t) => {
-//   return t.hello()
-// })
-
-// /* Query type */
-
-// function querySelection<T>(
-//   fn: (fields: Fields['Query']) => T,
-// ): Selection<Fields['Query'], T> {
-//   let fields: Fields['Query'] = {
-//     humans: () => {},
-//   }
-
-//   return fn(fields)
-// }
-
-// /* Human type */
-
-// function humanSelection<T>(
-//   fn: (fields: Fields['Human']) => T,
-// ): Selection<Fields['Human'], T> {
-//   let fields = {}
-
-//   return fn(fields)
-// }
-
-type O<T extends keyof FieldTypes> = Object[`${T}`]
-
-/* api/objects.ts */
-class OHuman {
-  /**
-   * Returns the id of a human.
-   */
-  static id(fields: Fields<O<'Human'>>): string {
-    /* Selection */
-    fields.select(leaf('id'))
-    /* Decoder */
-    return fields.data().id
+type Object = {
+  Query: {
+    hello: string
+    human: Object['Human']
   }
-
-  // /**
-  //  * Returns the id of a human.
-  //  */
-  // static name(fields: Fields<Object['Human']>): string {
-  //   /* Selection */
-  //   fields.select(leaf('id'))
-  //   /* Decoder */
-  //   return fields.data().id
-  // }
+  Human: {
+    id: string
+    name: string
+  }
 }
 
-const OHuman2 = {
-  /**
-   * Returns the id of a human.
-   */
-  id(fields: Fields<Object['Human']>): string {
-    /* Selection */
-    fields.select(leaf('id'))
+// const Query = { _type: 'Query' as const }
+// type Query = typeof Query
+
+const objects = {
+  /* Query */
+  query: <T>(
+    selector: (fields: FieldsTypes['Query']) => T,
+  ): SelectionSet<Object['Query'], T> => {
     /* Decoder */
-    return fields.data().id
+
+    const decoder = (fields: Fields<Object['Query']>): T => {
+      /**
+       * These funcitons call to fields that they receive once we
+       * start constructing a query.
+       *
+       * We pass this functions to developer land so that users may
+       * make a selection with them.
+       */
+      const types: FieldsTypes['Query'] = {
+        /* hello field */
+        hello: () => {
+          // Select
+          fields.select(leaf('hello'))
+
+          // Decode
+          const data = fields.data()
+          switch (data.type) {
+            /* Return null for mocking purposes. */
+            case 'fetching':
+              return null as any
+
+            /* Return the actual data. */
+            case 'fetched':
+              return data.response.hello
+          }
+        },
+        /* hello field */
+        human: (selection) => {
+          let subfields = new Fields<Object['Human']>()
+
+          selection.decoder(subfields)
+
+          // Select
+          fields.select(composite('human', subfields))
+
+          // Decode
+          const data = fields.data()
+          switch (data.type) {
+            /* Return null for mocking purposes. */
+            case 'fetching':
+              return null as any
+
+            /* Return the actual data. */
+            case 'fetched':
+              return data.response.human
+          }
+        },
+      }
+
+      return selector(types)
+    }
+
+    /* Type */
+    const type = Query
+
+    // return selector()
+    return selection(type, decoder)
   },
 
-  /**
-   * Returns the name of a human.
+  /***
    *
-   * @param fields - Provided by the function
+   *
+   *
+   *
+   *
+   *
+   *
    */
-  name(fields: Fields<Object['Human']>): string {
-    /* Selection */
-    fields.select(leaf('id'))
-    /* Decoder */
-    return fields.data().id
+
+  /* Human */
+  human: <T>(
+    selector: (fields: FieldsTypes['Query']) => T,
+  ): SelectionSet<Query, T> => {
+    return selection()
   },
 }
-
-// OHuman
-
-function h<Type>(
-  fn: (fields: Fields<Object['Human']>) => Type,
-): SelectionSet<Query, Type> {
-  /* Fields */
-  const fields = new Fields<Object['Query']>()
-
-  return {
-    _typelock: { _type: 'Query' },
-    // _type: fn(selection),
-    decoder: fn,
-  }
-}
-
-const pg2 = query((t) => {
-  return t.humans(human((t) => t.name()))
-})
