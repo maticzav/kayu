@@ -6,12 +6,27 @@ import { composite, Field, leaf } from './document/field'
 class Fields<TypeLock> {
   /* State */
 
+  // WIP: Try dictionary structure for fields?
   private fields: Field[]
-  private response: Response<TypeLock>
+  private readonly response: Response<TypeLock>
+
+  /* Initializer */
+
+  constructor(data?: TypeLock) {
+    // Set selection to none.
+    this.fields = []
+
+    // Set response according to the given data.
+    if (data) {
+      this.response = { type: 'fetched', response: data }
+    } else {
+      this.response = { type: 'fetching' }
+    }
+  }
 
   /* Accessors */
 
-  data(): Response<TypeLock> {
+  get data(): Response<TypeLock> {
     return this.response
     // switch (this.response.type) {
     //   /* Return null for mocking purposes. */
@@ -32,6 +47,15 @@ class Fields<TypeLock> {
   select(field: Field) {
     this.fields.push(field)
   }
+
+  /* Acessors */
+
+  /**
+   * Returns a selection of accumulated fields.
+   */
+  get selection(): Field[] {
+    return this.fields
+  }
 }
 
 type Response<TypeLock> =
@@ -49,7 +73,7 @@ type SelectionSet<TypeLock, Type> = {
   /**
    * Locks the type of a given seleciton.
    */
-  readonly _typelock: TypeLock
+  // readonly _typelock: TypeLock
   /**
    * We use decoder to generate selection given a top most Fields object
    * and to decode response to desired type.
@@ -57,14 +81,36 @@ type SelectionSet<TypeLock, Type> = {
   decoder: (fields: Fields<TypeLock>) => Type
 }
 
+// class SelectionSet<TypeLock, Type> {
+//   /**
+//    * Locks the type of a given seleciton.
+//    */
+//   private readonly typelock: TypeLock
+
+//   /**
+//    * We use decoder to generate selection given a top most Fields object
+//    * and to decode response to desired type.
+//    */
+//   readonly decoder: (fields: Fields<TypeLock>) => Type
+
+//   /* Initializer */
+
+//   constructor(type: TypeLock, decoder: (fields: Fields<TypeLock>) => Type) {
+//     this.typelock = type
+//     this.decoder = decoder
+//   }
+
+//   /* Methods */
+// }
+
 /**
  * Utility function for creating SelectionSet.
  */
 function selection<TypeLock, Type>(
-  type: TypeLock,
   decoder: (fields: Fields<TypeLock>) => Type,
 ): SelectionSet<TypeLock, Type> {
-  return { _typelock: type, decoder }
+  return { decoder }
+  // return new SelectionSet(type, decoder)
 }
 
 // class SelectionSet<TypeLock, Type> {
@@ -109,16 +155,6 @@ function selection<TypeLock, Type>(
  */
 /* "Generated" code */
 
-const schema = /* graphql */ `
-  type Query {
-    hello: String!
-  }
-`
-
-type S<TypeLock> = { type: never }
-
-/* Manual code */
-
 /**
  * FieldTypes represent all the possible fields
  * user may use to make a selection in a given type.
@@ -140,17 +176,25 @@ type FieldsTypes = {
 }
 
 /**
- * Holds information about all return types from the schema.
+ * Holds information about all return types from the schema and their
+ * identifiers that we use as a reference for TypeLocks.
+ *
+ * We predefine identifiers to get better error messages and type
+ * annotations by the IDE.
  */
+type Query = {
+  hello: string
+  human: Object['Human']
+}
+
+type Human = {
+  id: string
+  name: string
+}
+
 type Object = {
-  Query: {
-    hello: string
-    human: Object['Human']
-  }
-  Human: {
-    id: string
-    name: string
-  }
+  Query: Query
+  Human: Human
 }
 
 // const Query = { _type: 'Query' as const }
@@ -172,13 +216,13 @@ const objects = {
        * make a selection with them.
        */
       const types: FieldsTypes['Query'] = {
-        /* hello field */
+        /* hello */
         hello: () => {
           // Select
           fields.select(leaf('hello'))
 
           // Decode
-          const data = fields.data()
+          const data = fields.data
           switch (data.type) {
             /* Return null for mocking purposes. */
             case 'fetching':
@@ -189,17 +233,15 @@ const objects = {
               return data.response.hello
           }
         },
-        /* hello field */
+        /* human */
         human: (selection) => {
+          // Make a selection.
           let subfields = new Fields<Object['Human']>()
-
           selection.decoder(subfields)
-
-          // Select
-          fields.select(composite('human', subfields))
+          fields.select(composite('human', subfields.selection))
 
           // Decode
-          const data = fields.data()
+          const data = fields.data
           switch (data.type) {
             /* Return null for mocking purposes. */
             case 'fetching':
@@ -215,11 +257,8 @@ const objects = {
       return selector(types)
     }
 
-    /* Type */
-    const type = Query
-
-    // return selector()
-    return selection(type, decoder)
+    /* Selector */
+    return selection(decoder)
   },
 
   /***
@@ -234,8 +273,74 @@ const objects = {
 
   /* Human */
   human: <T>(
-    selector: (fields: FieldsTypes['Query']) => T,
-  ): SelectionSet<Query, T> => {
-    return selection()
+    selector: (fields: FieldsTypes['Human']) => T,
+  ): SelectionSet<Object['Human'], T> => {
+    /* Decoder */
+
+    const decoder = (fields: Fields<Object['Human']>): T => {
+      /* Fields */
+      const types: FieldsTypes['Human'] = {
+        /* hello */
+        id: () => {
+          // Select
+          fields.select(leaf('id'))
+
+          // Decode
+          const data = fields.data
+          switch (data.type) {
+            /* Return null for mocking purposes. */
+            case 'fetching':
+              return null as any
+
+            /* Return the actual data. */
+            case 'fetched':
+              return data.response.id
+          }
+        },
+        /* human */
+        name: () => {
+          // Select
+          fields.select(leaf('name'))
+
+          // Decode
+          const data = fields.data
+          switch (data.type) {
+            /* Return null for mocking purposes. */
+            case 'fetching':
+              return null as any
+
+            /* Return the actual data. */
+            case 'fetched':
+              return data.response.name
+          }
+        },
+      }
+
+      return selector(types)
+    }
+
+    /* Selector */
+    return selection(decoder)
   },
 }
+
+/* Playground */
+
+const pg_human = objects.human((t) => {
+  let id = t.id()
+  let name = t.name()
+
+  return { id, name }
+})
+
+const pg = objects.query((t) => {
+  let hello = t.hello()
+  let human = t.human(pg_human)
+  return 'hey'
+})
+
+let fields = new Fields<Object['Query']>()
+
+pg.decoder(fields)
+
+console.log(JSON.stringify(fields, null, 2))
