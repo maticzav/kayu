@@ -8,6 +8,8 @@ const schema = /* graphql */ `
   }
 `
 
+type S<TypeLock> = { type: never }
+
 /* Manual code */
 
 type Response<TypeLock> =
@@ -93,6 +95,9 @@ type FieldTypes = {
     // humans: (selection: Selection<Fields['Human'], any>) => any
   }
   Human: {
+    /**
+     * Returns the id of a human.
+     */
     id: () => string
     name: () => string
   }
@@ -137,6 +142,9 @@ function human<Type>(
 
   /* Selection */
   const selection: FieldTypes['Human'] = {
+    /**
+     * Returns the id of a human.
+     */
     id: () => {
       /* Selection */
       fields.select(leaf('id'))
@@ -203,12 +211,16 @@ function human<Type>(
  *
  * I think we need to reduce phantomness of the selection to achieve this.
  */
-const h = human((t) => {
-  return t.name()
-})
+// const hu = human((t) => {
+//   return t.name()
+// })
 
 const pg = query((t) => {
   return t.humans(human((t) => t.name()))
+})
+
+human((t) => {
+  t.id()
 })
 
 // const playground = query((t) => {
@@ -236,3 +248,71 @@ const pg = query((t) => {
 
 //   return fn(fields)
 // }
+
+type O<T extends keyof FieldTypes> = Object[`${T}`]
+
+/* api/objects.ts */
+class OHuman {
+  /**
+   * Returns the id of a human.
+   */
+  static id(fields: Fields<O<'Human'>>): string {
+    /* Selection */
+    fields.select(leaf('id'))
+    /* Decoder */
+    return fields.data().id
+  }
+
+  // /**
+  //  * Returns the id of a human.
+  //  */
+  // static name(fields: Fields<Object['Human']>): string {
+  //   /* Selection */
+  //   fields.select(leaf('id'))
+  //   /* Decoder */
+  //   return fields.data().id
+  // }
+}
+
+const OHuman2 = {
+  /**
+   * Returns the id of a human.
+   */
+  id(fields: Fields<Object['Human']>): string {
+    /* Selection */
+    fields.select(leaf('id'))
+    /* Decoder */
+    return fields.data().id
+  },
+
+  /**
+   * Returns the name of a human.
+   *
+   * @param fields - Provided by the function
+   */
+  name(fields: Fields<Object['Human']>): string {
+    /* Selection */
+    fields.select(leaf('id'))
+    /* Decoder */
+    return fields.data().id
+  },
+}
+
+// OHuman
+
+function h<Type>(
+  fn: (fields: Fields<Object['Human']>) => Type,
+): SelectionSet<Query, Type> {
+  /* Fields */
+  const fields = new Fields<Object['Query']>()
+
+  return {
+    _typelock: { _type: 'Query' },
+    // _type: fn(selection),
+    decoder: fn,
+  }
+}
+
+const pg2 = query((t) => {
+  return t.humans(human((t) => t.name()))
+})
