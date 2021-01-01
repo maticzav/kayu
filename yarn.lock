@@ -1013,6 +1013,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/object-hash@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "@types/object-hash@npm:1.3.4"
+  checksum: 2ae12c7b341bcefb8f5e163527ab6afb911b3fdcdb2aeacac3231b13d5d5ddd4f75bde48268dd01727bac3488222b629808b20b6650364d011bb3c6692dd38e2
+  languageName: node
+  linkType: hard
+
+"@types/prettier@npm:^2":
+  version: 2.1.6
+  resolution: "@types/prettier@npm:2.1.6"
+  checksum: c78a6406b0b0d167c3285c84ca63308028517bc772b16960d959ae0ab8947f58c33aac4ba4485ac878f114be230764f7d5582a43115727ba68e5fb59360d5f37
+  languageName: node
+  linkType: hard
+
 "@types/prettier@npm:^2.0.0":
   version: 2.1.5
   resolution: "@types/prettier@npm:2.1.5"
@@ -2157,6 +2171,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-fetch@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "cross-fetch@npm:3.0.6"
+  dependencies:
+    node-fetch: 2.6.1
+  checksum: a491ad1b89988a351f8b8b252b68a5e653636d911042648c43a806cf7575ff043379a80d6269102ca60ec633af0b49ca4c83536007793bb0e65e491769f70d9d
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^6.0.0":
   version: 6.0.5
   resolution: "cross-spawn@npm:6.0.5"
@@ -3187,7 +3210,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.3.0":
+"graphql@npm:^15.3.0, graphql@npm:^15.4.0":
   version: 15.4.0
   resolution: "graphql@npm:15.4.0"
   checksum: 1a307dcfe2646e1e8323d03e8cd24554ba9f7369863bf0b020f2e4b39bff3504dc7d6dcad19cb96899f0825eda4c688819911f0c270e84f1bb0954fe3ac16a31
@@ -4790,6 +4813,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"multilines@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "multilines@npm:1.0.3"
+  checksum: 188c6aa67380eff25a6b6ebe22f683f761449d9a278e3bb396165122e95627ac3a4ae884e261fc54cd0461b8970bd957032ab4444ba607f323ea0001c1f80323
+  languageName: node
+  linkType: hard
+
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -4842,7 +4872,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.1.2, node-fetch@npm:^2.2.0":
+"node-fetch@npm:2.6.1, node-fetch@npm:^2.1.2, node-fetch@npm:^2.2.0":
   version: 2.6.1
   resolution: "node-fetch@npm:2.6.1"
   checksum: cbb171635e538162b977eac5dfe7a1e07a9a02e991924377a6435502291e2f823d306b95aabc455caebf4a118ccf836868462bc70ccc3095af02bb9da61fda37
@@ -5002,6 +5032,13 @@ fsevents@~2.1.2:
     define-property: ^0.2.5
     kind-of: ^3.0.3
   checksum: d91d46e54297cad0544f04e4dff4694f92aca9661f59ad7e803a1ba94a2bb24b38ca4fd59ea827d24c9bdc6f7148d5c838287ee4b2b9c5df9b445b1c0d7a066c
+  languageName: node
+  linkType: hard
+
+"object-hash@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "object-hash@npm:2.1.1"
+  checksum: fe49a0864cba7ac4055c604295692ae75f5f4d22ba929aaaa987469809d17ab030d1111e8f0d425a070fa4a78b8021b55260e26e98b66b59e0f7be2bd9069fb8
   languageName: node
   linkType: hard
 
@@ -6512,12 +6549,21 @@ fsevents@~2.1.2:
 "ts-graphql-codegen@workspace:packages/ts-graphql-codegen":
   version: 0.0.0-use.local
   resolution: "ts-graphql-codegen@workspace:packages/ts-graphql-codegen"
+  dependencies:
+    "@types/prettier": ^2
+    graphql: ^15.4.0
+    prettier: ^2.2.1
   languageName: unknown
   linkType: soft
 
 "ts-graphql@workspace:packages/ts-graphql":
   version: 0.0.0-use.local
   resolution: "ts-graphql@workspace:packages/ts-graphql"
+  dependencies:
+    "@types/object-hash": ^1.3.4
+    cross-fetch: ^3.0.6
+    multilines: ^1.0.3
+    object-hash: ^2.1.1
   languageName: unknown
   linkType: soft
 

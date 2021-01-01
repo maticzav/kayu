@@ -5,6 +5,7 @@
     "server"
   ],
   "scripts": {
+    "test": "jest",
     "g:tsc": "cd $INIT_CWD && tsc",
     "g:tsn": "cd $INIT_CWD && ts-node",
     "g:tsnd": "cd $INIT_CWD && ts-node-dev"

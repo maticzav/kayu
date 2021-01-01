@@ -5,11 +5,13 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "sourceMap": true,
+    "strict": true,
 
     "incremental": true,
     "composite": true,
 
     "lib": ["esnext"],
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["**/tests/**/*", "**/dist/**/*"]
 }

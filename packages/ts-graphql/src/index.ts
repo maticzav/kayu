@@ -1,12 +1,8 @@
 import { composite, leaf } from './document/field'
 import { SelectionSet, Fields, selection } from './selection'
+import { string, boolean, int, float } from './scalar'
 
-/* Scalars */
-
-const Scalars = {
-  number: 42,
-  string: 'Matic Zavadlal',
-}
+// Scalars
 
 /**
  * FieldTypes represent all the possible fields
@@ -79,7 +75,7 @@ const objects = {
           switch (data.type) {
             /* Return null for mocking purposes. */
             case 'fetching':
-              return Scalars.string
+              return string.mockValue
 
             /* Return the actual data. */
             case 'fetched':
@@ -136,7 +132,7 @@ const objects = {
           switch (data.type) {
             /* Return null for mocking purposes. */
             case 'fetching':
-              return Scalars.string
+              return string.mockValue
 
             /* Return the actual data. */
             case 'fetched':
@@ -153,7 +149,7 @@ const objects = {
           switch (data.type) {
             /* Return null for mocking purposes. */
             case 'fetching':
-              return Scalars.string
+              return string.mockValue
 
             /* Return the actual data. */
             case 'fetched':

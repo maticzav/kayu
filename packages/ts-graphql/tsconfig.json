@@ -4,7 +4,7 @@
     "rootDir": "./src",
     "outDir": "./dist"
   },
-  "references": [{ "path": "../ts-graphql-codegen" }],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "tests"]
+  "references": [{ "path": "../ts-graphql-codegen" }]
+  // "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  // "exclude": ["node_modules", "tests"]
 }

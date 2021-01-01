@@ -1,5 +1,5 @@
 module.exports = {
-  roots: [],
+  roots: ['<rootDir>/packages/'],
   testEnvironment: 'node',
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
@@ -7,16 +7,16 @@ module.exports = {
   testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.tsx?$',
   testPathIgnorePatterns: ['/node_modules/', '/__fixtures__/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  //   collectCoverage: true,
-  //   collectCoverageFrom: [
-  //     '**/*.{ts,tsx}',
-  //     '!**/node_modules/**',
-  //     '!**/vendor/**',
-  //     '!**/generated/**',
-  //   ],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '**/*.{ts,tsx}',
+    '!**/node_modules/**',
+    '!**/vendor/**',
+    '!**/generated/**',
+  ],
   verbose: true,
-  //   coverageDirectory: './coverage',
-  //   coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
+  coverageDirectory: './coverage',
+  coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
   // globals: {
   //   'ts-jest': {
   //     tsconfig: 'tsconfig.test.json',
