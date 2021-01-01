@@ -4,6 +4,9 @@
 - object is the same as structure in Swift - roughly
 - have auto running postscript + cli utility to fetch schema and save it
 
+When you install it, we try to guess the root directory and create configuration file if it doesn't exist yet.
+If it does exist, we should generate the library every time user installs it.
+
 ## Configuration
 
 ```yml

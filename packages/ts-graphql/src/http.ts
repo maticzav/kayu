@@ -6,21 +6,37 @@ import { argumentsOfFields } from './document/field'
 import { Fields, SelectionSet } from './selection'
 import { defined } from './utils'
 
+interface SendInput<TypeLock, Type> {
+  endpoint: string
+  /**
+   * Selection of fields.
+   */
+  selection: SelectionSet<TypeLock, Type>
+  /**
+   * Tells whether it's a query or a mutation.
+   */
+  operationName?: string
+  /**
+   * HTTP method used to send the request. Defaults to POST>
+   */
+  method?: HttpMethod
+  /**
+   * Dictionary of key-value pairs that we should use as headers.
+   */
+  headers?: HttpHeaders
+}
+
 /**
  * Executes a query against the endpoint.
  */
-// export async function send<TypeLock, Type>(opts: {
-//   selection: SelectionSet<TypeLock, Type>
-//   operation: OperationType
-//   operationName?: string
-//   endpoint: string
-//   method: HttpMethod
-//   headers: HttpHeaders
-// }): Promise<Type> {
-//   return perform({
-//     endpoint,
-//   })
-// }
+export async function send<TypeLock, Type>(
+  opts: SendInput<TypeLock, Type>,
+): Promise<Type> {
+  return perform({
+    operation: OperationType.Query,
+    ...opts,
+  })
+}
 
 export type HttpHeaders = { [key: string]: string }
 export enum HttpMethod {
@@ -46,7 +62,7 @@ interface PerformInput<TypeLock, Type> {
   /**
    * Dictionary of key-value pairs that we should use as headers.
    */
-  headers: HttpHeaders
+  headers?: HttpHeaders
 }
 
 /**

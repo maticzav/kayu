@@ -4,9 +4,10 @@
   "scripts": {},
   "dependencies": {
     "graphql": "^15.4.0",
+    "multilines": "^1.0.3",
     "prettier": "^2.2.1"
   },
   "devDependencies": {
-    "@types/prettier": "^2"
+    "@types/prettier": "^2.1.6"
   }
 }

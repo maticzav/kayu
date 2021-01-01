@@ -1020,17 +1020,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2":
-  version: 2.1.6
-  resolution: "@types/prettier@npm:2.1.6"
-  checksum: c78a6406b0b0d167c3285c84ca63308028517bc772b16960d959ae0ab8947f58c33aac4ba4485ac878f114be230764f7d5582a43115727ba68e5fb59360d5f37
-  languageName: node
-  linkType: hard
-
 "@types/prettier@npm:^2.0.0":
   version: 2.1.5
   resolution: "@types/prettier@npm:2.1.5"
   checksum: bc6271235d881fa49b2f03e8e9242a7be8ecbcdcffeb7e31347afd0343f5f5e372ce65fe257e44254156737935c9249c9722cbe991dfad9aab72056c6acdbdaa
+  languageName: node
+  linkType: hard
+
+"@types/prettier@npm:^2.1.6":
+  version: 2.1.6
+  resolution: "@types/prettier@npm:2.1.6"
+  checksum: c78a6406b0b0d167c3285c84ca63308028517bc772b16960d959ae0ab8947f58c33aac4ba4485ac878f114be230764f7d5582a43115727ba68e5fb59360d5f37
   languageName: node
   linkType: hard
 
@@ -6550,8 +6550,9 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "ts-graphql-codegen@workspace:packages/ts-graphql-codegen"
   dependencies:
-    "@types/prettier": ^2
+    "@types/prettier": ^2.1.6
     graphql: ^15.4.0
+    multilines: ^1.0.3
     prettier: ^2.2.1
   languageName: unknown
   linkType: soft
