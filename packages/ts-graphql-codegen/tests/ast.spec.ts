@@ -1,14 +1,6 @@
-import {
-  IntrospectionNamedTypeRef,
-  IntrospectionOutputTypeRef,
-  IntrospectionTypeRef,
-} from 'graphql'
-import {
-  IntrospectionInvertedOutputTypeRef,
-  IntrospectionInvertedTypeRef,
-  invert,
-  revert,
-} from '../src/ast'
+import { IntrospectionNamedTypeRef, IntrospectionTypeRef } from 'graphql'
+
+import { IntrospectionInvertedTypeRef, invert, revert } from '../src/ast'
 
 describe('ref', () => {
   /**
@@ -18,18 +10,34 @@ describe('ref', () => {
   test('inversion and reversion cancel out', () => {
     // ID
     const scalar: IntrospectionNamedTypeRef = { kind: 'SCALAR', name: 'ID' }
-    // [ID]!
+    // [[ID]!]!
     const ref: IntrospectionTypeRef = {
       kind: 'NON_NULL',
       ofType: {
         kind: 'LIST',
-        ofType: scalar,
+        ofType: {
+          kind: 'NON_NULL',
+          ofType: {
+            kind: 'LIST',
+            ofType: scalar,
+          },
+        },
       },
     }
-    const iref: IntrospectionInvertedOutputTypeRef = {
+    const iref: IntrospectionInvertedTypeRef = {
       kind: 'LIST',
       ofType: {
-        kind,
+        kind: 'LIST',
+        ofType: {
+          kind: 'NULLABLE',
+          ofType: {
+            kind: 'LIST',
+            ofType: {
+              kind: 'NULLABLE',
+              ofType: scalar,
+            },
+          },
+        },
       },
     }
 
@@ -45,6 +53,11 @@ describe('ref', () => {
 
     expect(invert(scalar)).toEqual({
       kind: 'NULLABLE',
+      ofType: scalar,
+    })
+
+    expect(revert(scalar)).toEqual({
+      kind: 'NON_NULL',
       ofType: scalar,
     })
   })

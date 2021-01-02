@@ -1,12 +1,7 @@
 import {
   IntrospectionInputType,
-  IntrospectionInputTypeRef,
-  IntrospectionListTypeRef,
   IntrospectionNamedTypeRef,
-  IntrospectionNonNullTypeRef,
   IntrospectionOutputType,
-  IntrospectionOutputTypeRef,
-  IntrospectionType,
   IntrospectionTypeRef,
 } from 'graphql'
 
@@ -40,39 +35,50 @@ export function getNamedTypeRef<T>(
  * nullable by default.
  */
 
-export interface IntrospectionNullableTypeRef<
-  T extends IntrospectionTypeRef = IntrospectionTypeRef
-> {
-  readonly kind: 'NULLABLE'
-  readonly ofType: T
-}
-
-export type IntrospectionInvertedTypeRef<T extends IntrospectionType> =
-  | IntrospectionNamedTypeRef<T>
-  | IntrospectionInvertedListTypeRef<any>
-  | IntrospectionNullableTypeRef<
-      IntrospectionNamedTypeRef<T> | IntrospectionListTypeRef<any>
-    >
-
 export interface IntrospectionInvertedListTypeRef<
-  T extends IntrospectionInvertedTypeRef = IntrospectionInvertedTypeRef<any>
+  T extends IntrospectionInvertedTypeRef = IntrospectionInvertedTypeRef
 > {
   readonly kind: 'LIST'
   readonly ofType: T
 }
 
-export type IntrospectionInvertedOutputTypeRef = IntrospectionInvertedTypeRef<IntrospectionOutputType>
+export interface IntrospectionNullableTypeRef<
+  T extends IntrospectionInvertedTypeRef = IntrospectionInvertedTypeRef
+> {
+  readonly kind: 'NULLABLE'
+  readonly ofType: T
+}
 
-export type IntrospectionInvertedInputTypeRef = IntrospectionInvertedTypeRef<IntrospectionInputType>
+export type IntrospectionInvertedTypeRef =
+  | IntrospectionNamedTypeRef
+  | IntrospectionInvertedListTypeRef<any>
+  | IntrospectionNullableTypeRef<
+      IntrospectionNamedTypeRef | IntrospectionInvertedListTypeRef<any>
+    >
 
+export type IntrospectionInvertedOutputTypeRef =
+  | IntrospectionNamedTypeRef<IntrospectionOutputType>
+  | IntrospectionInvertedListTypeRef<any>
+  | IntrospectionNullableTypeRef<
+      | IntrospectionNamedTypeRef<IntrospectionOutputType>
+      | IntrospectionInvertedListTypeRef<any>
+    >
+
+export type IntrospectionInvertedInputTypeRef =
+  | IntrospectionNamedTypeRef<IntrospectionInputType>
+  | IntrospectionInvertedListTypeRef<any>
+  | IntrospectionNullableTypeRef<
+      | IntrospectionNamedTypeRef<IntrospectionInputType>
+      | IntrospectionInvertedListTypeRef<any>
+    >
 /**
  * Inverts the ref to inverted instance to make type calculations easier.
  */
 export function invert<T>(
-  ref: IntrospectionOutputTypeRef,
-): IntrospectionInvertedOutputTypeRef {
+  ref: IntrospectionTypeRef,
+): IntrospectionInvertedTypeRef {
   /**
-   * Every field is by default nullable (read GraphQL spec).
+   * Every field is by default nullable (as told in GraphQL spec).
    * If it's wrapped to be non-nullable we simply remove the
    * nullablility wrapper that we added down in the chain.
    */
@@ -89,12 +95,22 @@ export function invert<T>(
         }
       }
     }
+    /* List */
+    case 'LIST': {
+      return {
+        kind: 'NULLABLE',
+        ofType: {
+          kind: 'LIST',
+          ofType: invert(ref.ofType),
+        },
+      }
+    }
     /* Named */
-    case 'LIST':
     case 'ENUM':
     case 'UNION':
     case 'OBJECT':
     case 'SCALAR':
+    case 'INPUT_OBJECT':
     case 'INTERFACE': {
       return {
         kind: 'NULLABLE',
@@ -108,14 +124,14 @@ export function invert<T>(
  * Inverts the ref back to its original state.
  */
 export function revert<T>(
-  ref: IntrospectionInvertedOutputTypeRef,
-): IntrospectionOutputTypeRef {
+  ref: IntrospectionInvertedTypeRef,
+): IntrospectionTypeRef {
   /**
    * Every reference is now by default non-nullalbe,
    * that's why we should make every instance non-nullable
    * and remove the wrapper if we come across nullable wrapper.
    *
-   * Note that we are simply changing perspective, not the values themself.
+   * Note that we are simply changing perspective, not the values themselves.
    */
   switch (ref.kind) {
     /* Nullable */
@@ -130,12 +146,22 @@ export function revert<T>(
         }
       }
     }
+    /* List */
+    case 'LIST': {
+      return {
+        kind: 'NON_NULL',
+        ofType: {
+          kind: 'LIST',
+          ofType: revert(ref.ofType),
+        },
+      }
+    }
     /* Named */
-    case 'LIST':
     case 'ENUM':
     case 'UNION':
     case 'OBJECT':
     case 'SCALAR':
+    case 'INPUT_OBJECT':
     case 'INTERFACE': {
       return {
         kind: 'NON_NULL',

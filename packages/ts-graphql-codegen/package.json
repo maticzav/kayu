@@ -5,9 +5,11 @@
   "dependencies": {
     "graphql": "^15.4.0",
     "multilines": "^1.0.3",
+    "node-fetch": "^2.6.1",
     "prettier": "^2.2.1"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2",
     "@types/prettier": "^2.1.6"
   }
 }

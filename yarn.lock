@@ -982,7 +982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:2.5.7":
+"@types/node-fetch@npm:2.5.7, @types/node-fetch@npm:^2":
   version: 2.5.7
   resolution: "@types/node-fetch@npm:2.5.7"
   dependencies:
@@ -4872,7 +4872,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2.6.1, node-fetch@npm:^2.1.2, node-fetch@npm:^2.2.0":
+"node-fetch@npm:2.6.1, node-fetch@npm:^2.1.2, node-fetch@npm:^2.2.0, node-fetch@npm:^2.6.1":
   version: 2.6.1
   resolution: "node-fetch@npm:2.6.1"
   checksum: cbb171635e538162b977eac5dfe7a1e07a9a02e991924377a6435502291e2f823d306b95aabc455caebf4a118ccf836868462bc70ccc3095af02bb9da61fda37
@@ -6550,9 +6550,11 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "ts-graphql-codegen@workspace:packages/ts-graphql-codegen"
   dependencies:
+    "@types/node-fetch": ^2
     "@types/prettier": ^2.1.6
     graphql: ^15.4.0
     multilines: ^1.0.3
+    node-fetch: ^2.6.1
     prettier: ^2.2.1
   languageName: unknown
   linkType: soft
