@@ -8,24 +8,39 @@ import { IntrospectionInvertedTypeRef, invert } from './ast'
 
 /**
  * Wraps the given type using a given reference.
+ *
+ * @param type - The chunk that we are wrapping.
+ * @param ref - The reference that we use as a wrapping base.
+ * @param optionals - Tells whether `null` values may be undefined.
  */
-export function wrap(type: string, ref: IntrospectionTypeRef): string {
-  return wrapInverted(type, invert(ref))
+export function wrap(
+  type: string,
+  ref: IntrospectionTypeRef,
+  optionals: boolean = false,
+): string {
+  return wrapInverted(type, invert(ref), optionals)
 }
 
 /**
  * This is an internal helper function that lets us more easily define the return type
  * of the refered one.
  */
-function wrapInverted(type: string, ref: IntrospectionInvertedTypeRef): string {
+function wrapInverted(
+  type: string,
+  ref: IntrospectionInvertedTypeRef,
+  optionals: boolean,
+): string {
   switch (ref.kind) {
     /* Nullable */
     case 'NULLABLE': {
-      return `(${wrapInverted(type, ref.ofType)} | null)`
+      const wrapped = wrapInverted(type, ref.ofType, optionals)
+
+      if (optionals) return `(${wrapped} | null | undefined)`
+      return `(${wrapped} | null)`
     }
     /* List */
     case 'LIST': {
-      return `(${wrapInverted(type, ref.ofType)}[])`
+      return `(${wrapInverted(type, ref.ofType, optionals)}[])`
     }
     /* Named */
     case 'ENUM':

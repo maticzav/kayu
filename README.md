@@ -10,9 +10,12 @@ If it does exist, we should generate the library every time user installs it.
 ## Configuration
 
 ```yml
-endpoint: path_to_local_schema | url
+endpoint: url
+schema: local_path
 output: local_path | node_modules default
 ```
+
+Binary by default tries to reach the server. If the server cannot be reached, we use local version of the schema. Save files in `.kayak`.
 
 ## Code
 

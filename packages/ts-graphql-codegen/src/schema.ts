@@ -19,7 +19,7 @@ export type LoadSchemaFromOptions = {
   /**
    * The method used to perform the request.
    */
-  method?: 'POST' | 'GET'
+  method?: 'POST'
 }
 
 /**
@@ -41,12 +41,15 @@ export async function loadSchemaFromURL(
   /* Fetch the response */
   const res = await fetch(endpoint, {
     body: JSON.stringify(body),
-    headers: opts?.headers,
-    method: opts?.method,
+    headers: {
+      ...opts?.headers,
+      'Content-Type': 'application/json',
+    },
+    method: opts?.method || 'POST',
   })
 
-  const query: IntrospectionQuery = await res.json()
-  return query.__schema
+  const query: { data: IntrospectionQuery } = await res.json()
+  return query.data.__schema
 }
 
 /**

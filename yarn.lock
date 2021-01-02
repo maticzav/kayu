@@ -1880,7 +1880,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase@npm:^6.0.0":
+"camelcase@npm:^6.0.0, camelcase@npm:^6.2.0":
   version: 6.2.0
   resolution: "camelcase@npm:6.2.0"
   checksum: 654700600a80cb1f06ab85b3e2fe80333f94b441884d40826becdac549774f51b0317c6dcb6040416df26241fa9481eb58d0c1659d4d6d5627dcd4259be61beb
@@ -6552,10 +6552,12 @@ fsevents@~2.1.2:
   dependencies:
     "@types/node-fetch": ^2
     "@types/prettier": ^2.1.6
+    camelcase: ^6.2.0
     graphql: ^15.4.0
     multilines: ^1.0.3
     node-fetch: ^2.6.1
     prettier: ^2.2.1
+    ts-graphql: "workspace:packages/ts-graphql"
   languageName: unknown
   linkType: soft
 

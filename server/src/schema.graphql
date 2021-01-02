@@ -81,14 +81,14 @@ type Query {
     """
     id of the character
     """
-    id: ID
+    id: ID!
   ): CharacterUnion
   characters: [Character]
   droid(
     """
     id of the character
     """
-    id: ID
+    id: ID!
   ): Droid
   droids: [Droid]
   greeting(input: Greeting): String
@@ -96,7 +96,7 @@ type Query {
     """
     id of the character
     """
-    id: ID
+    id: ID!
   ): Human
   humans: [Human]
   luke: Human

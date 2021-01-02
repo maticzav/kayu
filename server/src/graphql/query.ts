@@ -1,4 +1,4 @@
-import { objectType, idArg, arg } from 'nexus'
+import { objectType, idArg, arg, nonNull } from 'nexus'
 import { getAuthorization } from '../utils'
 
 /* Query */
@@ -11,9 +11,7 @@ export const Query = objectType({
     t.nullable.field('human', {
       type: 'Human',
       args: {
-        id: idArg({
-          description: 'id of the character',
-        }),
+        id: nonNull(idArg({ description: 'id of the character' })),
       },
       resolve: (_, { id }, ctx) => ctx.data.getHuman(id),
     })
@@ -21,11 +19,8 @@ export const Query = objectType({
     t.nullable.field('droid', {
       type: 'Droid',
       args: {
-        id: idArg({
-          description: 'id of the character',
-        }),
+        id: nonNull(idArg({ description: 'id of the character' })),
       },
-
       resolve: (_, { id }, ctx) => ctx.data.getDroid(id),
     })
 
@@ -34,9 +29,7 @@ export const Query = objectType({
     t.nullable.field('character', {
       type: 'CharacterUnion',
       args: {
-        id: idArg({
-          description: 'id of the character',
-        }),
+        id: nonNull(idArg({ description: 'id of the character' })),
       },
 
       resolve: (_, { id }, ctx) => ctx.data.getCharacter(id),

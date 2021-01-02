@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {},
   "dependencies": {
+    "camelcase": "^6.2.0",
     "graphql": "^15.4.0",
     "multilines": "^1.0.3",
     "node-fetch": "^2.6.1",
@@ -10,6 +11,7 @@
   },
   "devDependencies": {
     "@types/node-fetch": "^2",
-    "@types/prettier": "^2.1.6"
+    "@types/prettier": "^2.1.6",
+    "ts-graphql": "workspace:packages/ts-graphql"
   }
 }

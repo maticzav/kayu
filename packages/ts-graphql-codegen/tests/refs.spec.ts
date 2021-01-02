@@ -15,4 +15,5 @@ test('inversion and reversion cancel out', () => {
 
   /* Test */
   expect(wrap('string', ref)).toEqual('((string | null)[])')
+  expect(wrap('string', ref, true)).toEqual('((string | null | undefined)[])')
 })
