@@ -7,3 +7,10 @@ export type Dict<T> = { [key: string]: T }
 export function never(_x: never): never {
   throw new Error('Switch statement not exhaustive!')
 }
+
+/**
+ * Checks that the given value is not undefined.
+ */
+export function defined<T>(val: T | undefined): val is T {
+  return val !== undefined
+}

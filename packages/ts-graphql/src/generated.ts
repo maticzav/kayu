@@ -62,8 +62,7 @@ type FieldsTypes = {
   }
 }
 
-// const Query = { _type: 'Query' as const }
-// type Query = typeof Query
+/* Objects */
 
 const objects = {
   /* Query */

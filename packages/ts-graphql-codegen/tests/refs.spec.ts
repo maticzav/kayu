@@ -1,6 +1,6 @@
 import { IntrospectionNamedTypeRef, IntrospectionTypeRef } from 'graphql'
 
-import { wrap } from '../src/field'
+import { wrap } from '../src/refs'
 
 test('inversion and reversion cancel out', () => {
   /* Reference Type */

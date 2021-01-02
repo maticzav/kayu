@@ -2,15 +2,19 @@ import {
   IntrospectionEnumType,
   IntrospectionInputObjectType,
   IntrospectionInterfaceType,
+  IntrospectionNamedTypeRef,
   IntrospectionObjectType,
   IntrospectionScalarType,
   IntrospectionSchema,
+  IntrospectionTypeRef,
   IntrospectionUnionType,
 } from 'graphql'
 import * as prettier from 'prettier'
 import * as os from 'os'
 
 import { getNamedTypeRef } from './ast'
+import { wrap } from './refs'
+import { defined } from './utils'
 
 type ScalarMap = Map<string, string>
 
@@ -169,8 +173,32 @@ export class GQLGenerator {
    */
   generateImports(): string[] {
     return [
-      "import { composite, leaf, fragment, SelectionSet, Fields, selection, string, boolean, int, float } from './'",
+      "import { composite, leaf, fragment, SelectionSet, Fields, selection } from './'",
     ]
+  }
+
+  /**
+   * Generates index of scalar types the generated code uses.
+   */
+  generateScalars(): string[] {
+    let code: string[] = []
+
+    code.push('type Scalar = {')
+    /* BuiltIn Types */
+    code.push(`ID: string`)
+    code.push(`String: string`)
+    code.push(`Float: number`)
+    code.push(`Int: number`)
+    code.push(`Bool: boolean`)
+    /* Custom Scalars */
+    for (const type in this.scalarMappings) {
+      const mapping = this.scalarMappings.get(type)!
+      code.push(`${type}: ${mapping}`)
+    }
+    /* End */
+    code.push('}')
+
+    return code
   }
 
   /**
@@ -196,48 +224,15 @@ export class GQLGenerator {
       // Push object definition code to types.
       code.push(`type ${id} = {`)
       for (const field of type.fields) {
-        const type = getNamedTypeRef(field.type)
+        /**
+         * - type contains the unwrapped indexed typed
+         * - ref is the whole type that we use to calculate wrapper
+         */
+        const type = this.getTypeMapping(getNamedTypeRef(field.type))
+        const ref = field.type
 
-        switch (type.kind) {
-          case 'ENUM':
-            code.push(`${field.name}: Enum['${type.name}']`)
-          case 'OBJECT':
-            code.push(`${field.name}: Object['${type.name}']`)
-          case 'SCALAR':
-            /**
-             * We map built-in scalars to their appropriate definitions
-             * in TypeScript types and leave custom scalars as any since
-             * the coders expect any value when encoding.
-             */
-            switch (type.name) {
-              /* Strings */
-              case 'ID':
-              case 'String': {
-                code.push(`${field.name}: string`)
-              }
-              /* Numbers */
-              case 'Float':
-              case 'Int': {
-                code.push(`${field.name}: number`)
-              }
-              /* Booleans */
-              case 'Bool': {
-                code.push(`${field.name}: boolean`)
-              }
-              /* Custom scalars */
-              default: {
-                code.push(`${field.name}: any`)
-              }
-            }
-          case 'INPUT_OBJECT':
-            console.log('TODO')
-          case 'INTERFACE':
-            console.log('TODO!!!')
-          case 'UNION':
-            console.log('TODO!!')
-        }
+        code.push(`${field.name}: ${wrap(type, ref)}`)
       }
-
       code.push(`}`, os.EOL)
     }
 
@@ -316,8 +311,43 @@ export class GQLGenerator {
 
       /**
        * Generate appropriate field definition for each field in a type.
+       * Each function may accept a selection, arguments or both.
+       *
+       * We make sure that we always generate a function, even if it's a thunk.
        */
       for (const field of type.fields) {
+        let chunks: string[] = []
+
+        // Arguments
+        if (field.args.length > 0) {
+          let args: string[] = []
+
+          for (const arg of field.args) {
+            const type = this.getTypeMapping(getNamedTypeRef(arg.type))
+            const ref = arg.type
+
+            args.push(`${arg.name}: ${wrap(type, ref)}`)
+          }
+
+          chunks.push(`(args: { ${args.join(', ')} })`)
+        }
+
+        // Selection
+        if (field.type.kind === 'LIST') {
+        }
+
+        // Make sure we at least have a thunk.
+        if (chunks.length === 0) {
+          chunks.push('()')
+        }
+
+        /**
+         * We merge the chunks into a single function declaration string.
+         */
+        const fn: string = chunks
+          .filter((chunk) => defined<string>(chunk))
+          .join(' => ')
+        code.push(`${field.name}: ${fn}`)
       }
 
       code.push('}')
@@ -328,5 +358,38 @@ export class GQLGenerator {
     return code
   }
 
-  // generateSelections
+  /**
+   * Generates the selection object.
+   */
+  generateSelections(): string[] {
+    return []
+  }
+
+  /* Utility functions */
+
+  /**
+   * Returns the mapping to a given type in generated code.
+   * We use this as a central point to document indexes.
+   */
+  getTypeMapping(type: IntrospectionNamedTypeRef): string {
+    switch (type.kind) {
+      case 'ENUM':
+        return `Enum['${type.name}']`
+      case 'OBJECT':
+        return `Object['${type.name}']`
+      case 'SCALAR':
+        return `Scalar['${type.name}']`
+      case 'INPUT_OBJECT':
+        return `InputObject['${type.name}']`
+      case 'INTERFACE':
+        return `Interface['${type.name}']`
+      case 'UNION':
+        return `Union['${type.name}']`
+    }
+  }
 }
+
+/**
+ *  NOTES:
+ * - work on optional arguments
+ */
