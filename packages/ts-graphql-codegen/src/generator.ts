@@ -1,6 +1,4 @@
-import { ml } from 'multilines'
 import {
-  GraphQLSchema,
   IntrospectionEnumType,
   IntrospectionInputObjectType,
   IntrospectionInterfaceType,
@@ -8,17 +6,15 @@ import {
   IntrospectionScalarType,
   IntrospectionSchema,
   IntrospectionUnionType,
-  visit,
 } from 'graphql'
 import * as prettier from 'prettier'
 import * as os from 'os'
 
-import { never } from './utils'
 import { getNamedTypeRef } from './ast'
 
 type ScalarMap = Map<string, string>
 
-class GQLGenerator {
+export class GQLGenerator {
   /* State */
 
   private scalarMappings: ScalarMap
@@ -202,15 +198,37 @@ class GQLGenerator {
       for (const field of type.fields) {
         const type = getNamedTypeRef(field.type)
 
-        // OPTIONALS!!
-
         switch (type.kind) {
           case 'ENUM':
             code.push(`${field.name}: Enum['${type.name}']`)
           case 'OBJECT':
             code.push(`${field.name}: Object['${type.name}']`)
-          case 'SCALAR': // TODO: how do we get the correct scalar type?
-            code.push(`${field.name}: ${this.scalar(type.name)}`)
+          case 'SCALAR':
+            /**
+             * We map built-in scalars to their appropriate definitions
+             * in TypeScript types and leave custom scalars as any since
+             * the coders expect any value when encoding.
+             */
+            switch (type.name) {
+              /* Strings */
+              case 'ID':
+              case 'String': {
+                code.push(`${field.name}: string`)
+              }
+              /* Numbers */
+              case 'Float':
+              case 'Int': {
+                code.push(`${field.name}: number`)
+              }
+              /* Booleans */
+              case 'Bool': {
+                code.push(`${field.name}: boolean`)
+              }
+              /* Custom scalars */
+              default: {
+                code.push(`${field.name}: any`)
+              }
+            }
           case 'INPUT_OBJECT':
             console.log('TODO')
           case 'INTERFACE':
@@ -269,6 +287,21 @@ class GQLGenerator {
   }
 
   /**
+   * Generates all the input objects that we may use as arguments.
+   */
+  generateInputObjects(): string[] {
+    return []
+  }
+
+  generateInterfaces(): string[] {
+    return []
+  }
+
+  generateUnions(): string[] {
+    return []
+  }
+
+  /**
    * FieldTypes represent all the possible fields user may use to make a selection in a given type.
    * This function creates a type-dictionary of these fields (i.e. for each type in the schema one branch).
    */
@@ -294,4 +327,6 @@ class GQLGenerator {
 
     return code
   }
+
+  // generateSelections
 }
