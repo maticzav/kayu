@@ -207,12 +207,14 @@ export class GQLGenerator {
 
   /**
    * Generates the library.
+   *
+   * @param core - relative path to the core library that we use in generated code.
    */
-  generate(): string {
+  generate(core: string): string {
     /* Generates chunks of code */
     const code = [
       /* Imports */
-      ...this.generateImports(),
+      ...this.generateImports(core),
       /* Type Index */
       os.EOL,
       '/* Scalars */',
@@ -254,10 +256,12 @@ export class GQLGenerator {
 
   /**
    * Generates imports that library needs.
+   *
+   * @param core - relative path to the core library that we use in generated code.
    */
-  generateImports(): string[] {
+  generateImports(core: string): string[] {
     return [
-      "import { composite, leaf, fragment, SelectionSet, Fields, selection, Argument, hash, arg } from 'ts-graphql/src/__generator'",
+      `import { composite, leaf, fragment, SelectionSet, Fields, selection, Argument, hash, arg } from '${core}'`,
     ]
   }
 

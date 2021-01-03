@@ -5,6 +5,7 @@
     "server"
   ],
   "scripts": {
+    "build": "yarn workspaces foreach build",
     "test": "jest",
     "g:tsc": "cd $INIT_CWD && tsc",
     "g:tsn": "cd $INIT_CWD && ts-node",

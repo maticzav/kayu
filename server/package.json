@@ -2,7 +2,8 @@
   "name": "server",
   "version": "0.0.0",
   "scripts": {
-    "start": "yarn g:tsnd --respawn ./src"
+    "start": "yarn g:tsnd --respawn ./src",
+    "build": "yarn g:tsc"
   },
   "dependencies": {
     "apollo-server-express": "^2.19.1",

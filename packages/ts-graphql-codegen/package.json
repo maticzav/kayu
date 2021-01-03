@@ -1,7 +1,9 @@
 {
   "name": "ts-graphql-codegen",
   "version": "0.0.0",
-  "scripts": {},
+  "scripts": {
+    "build": "yarn g:tsc"
+  },
   "dependencies": {
     "camelcase": "^6.2.0",
     "graphql": "^15.4.0",
@@ -10,8 +12,8 @@
     "prettier": "^2.2.1"
   },
   "devDependencies": {
+    "@graphql-tools/schema": "^7.1.2",
     "@types/node-fetch": "^2",
-    "@types/prettier": "^2.1.6",
-    "ts-graphql": "workspace:packages/ts-graphql"
+    "@types/prettier": "^2.1.6"
   }
 }

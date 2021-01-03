@@ -14,6 +14,7 @@ const prettier = require('../../../prettier.config')
 const ENDPOINT = 'http://localhost:4000/graphql'
 const SCHEMA_PATH = path.resolve(__dirname, './__fixtures__/schema.json')
 const API_PATH = path.resolve(__dirname, './__fixtures__/api.ts')
+const CORE_PATH = path.resolve(__dirname, '../../ts-graphql/src/__generator')
 
 describe('generator', () => {
   test('generates the API', async () => {
@@ -34,7 +35,6 @@ describe('generator', () => {
       schema = await loadSchemaFromURL(ENDPOINT)
       await writefile(SCHEMA_PATH, JSON.stringify(schema, null, 2))
     } catch (err) {
-      console.log(`Loading cached schema...`)
       schema = await loadSchemaFromPath(SCHEMA_PATH)
     } finally {
       if (!defined(schema)) throw new Error(`Couldn't load schema.`)
@@ -49,7 +49,7 @@ describe('generator', () => {
     /**
      * Save the code and perform tests as described above.
      */
-    const code = generator.generate()
+    const code = generator.generate(path.relative(__dirname, CORE_PATH))
     await writefile(API_PATH, code)
 
     expect(code).toMatchSnapshot()
