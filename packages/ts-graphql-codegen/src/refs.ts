@@ -7,6 +7,35 @@ import { IntrospectionTypeRef } from 'graphql'
 import { IntrospectionInvertedTypeRef, invert } from './ast'
 
 /**
+ * Wraps the given type using a given reference to a GraphQL SDL type.
+ *
+ * @param type - The chunk that we are wrapping.
+ * @param ref - The reference that we use as a wrapping base.
+ */
+export function wrapGraphQLSDL(
+  type: string,
+  ref: IntrospectionTypeRef,
+): string {
+  switch (ref.kind) {
+    /* Non Null */
+    case 'NON_NULL':
+      return `${wrapGraphQLSDL(type, ref.ofType)}!`
+
+    /* List */
+    case 'LIST':
+      return `[${wrapGraphQLSDL(type, ref.ofType)}]`
+    /* Named */
+    case 'ENUM':
+    case 'UNION':
+    case 'OBJECT':
+    case 'SCALAR':
+    case 'INPUT_OBJECT':
+    case 'INTERFACE':
+      return type
+  }
+}
+
+/**
  * Wraps the given type using a given reference.
  *
  * @param type - The chunk that we are wrapping.
@@ -35,12 +64,12 @@ function wrapInverted(
     case 'NULLABLE': {
       const wrapped = wrapInverted(type, ref.ofType, optionals)
 
-      if (optionals) return `(${wrapped} | null | undefined)`
-      return `(${wrapped} | null)`
+      if (optionals) return `${wrapped} | null | undefined`
+      return `${wrapped} | null`
     }
     /* List */
     case 'LIST': {
-      return `(${wrapInverted(type, ref.ofType, optionals)}[])`
+      return `Array<${wrapInverted(type, ref.ofType, optionals)}>`
     }
     /* Named */
     case 'ENUM':

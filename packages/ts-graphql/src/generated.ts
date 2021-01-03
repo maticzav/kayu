@@ -8,10 +8,10 @@ import {
   Fields,
   selection,
   /* Scalars */
-  string,
-  boolean,
-  int,
-  float,
+  // string,
+  // boolean,
+  // int,
+  // float,
 } from './__generator'
 import { OperationType, serialize } from './document'
 
@@ -168,7 +168,8 @@ const objects = {
 
             /* Return the actual data. */
             case 'fetched':
-              return data.response.name
+              const hash: string = 'abc'
+              return data.response.get(`id`)(hash)
           }
         },
       }

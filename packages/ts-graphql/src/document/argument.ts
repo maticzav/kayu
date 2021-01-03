@@ -24,10 +24,3 @@ export function arg<T>(name: string, type: string, value?: T): Argument {
 export function hash(args: Argument[]): string {
   return hasher.MD5(args.map((arg) => ({ type: arg.type, value: arg.value })))
 }
-
-/**
- * Extracts a name from an alias in the response.
- */
-export function getArgumentNameFromAlias(alias: string): string {
-  return alias.split('_')[0]
-}

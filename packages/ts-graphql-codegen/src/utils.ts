@@ -1,7 +1,5 @@
 import * as camelcase from 'camelcase'
 
-export type Dict<T> = { [key: string]: T }
-
 /**
  * Utility function that we use to make sure switch statements
  * are exhaustive.

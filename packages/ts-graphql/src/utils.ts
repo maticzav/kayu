@@ -12,3 +12,8 @@ export function indent(spaces: number): (val: string) => string {
 export function defined<T>(val: T | undefined): val is T {
   return val !== undefined
 }
+
+/**
+ * Represents a dictionary type.
+ */
+export type Dict<T = any> = { [key: string]: T }

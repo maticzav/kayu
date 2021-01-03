@@ -8,6 +8,9 @@ exports[`generator generates the API 1`] = `
   SelectionSet,
   Fields,
   selection,
+  Argument,
+  hash,
+  arg,
 } from 'ts-graphql/src/__generator'
 
 /* Scalars */
@@ -24,14 +27,14 @@ type DroidObject = {
   id: Scalar['ID'] | null
   name: Scalar['String'] | null
   primaryFunction: Scalar['String'] | null
-  appearsIn: (Enum['Episode'] | null)[] | null
+  appearsIn: Array<Enum['Episode'] | null> | null
 }
 
 type HumanObject = {
   id: Scalar['ID'] | null
   name: Scalar['String'] | null
   homePlanet: Scalar['String'] | null
-  appearsIn: (Enum['Episode'] | null)[] | null
+  appearsIn: Array<Enum['Episode'] | null> | null
   infoURL: Scalar['String'] | null
 }
 
@@ -40,9 +43,9 @@ type QueryObject = {
   droid: Object['Droid'] | null
   character: Union['CharacterUnion'] | null
   luke: Object['Human'] | null
-  humans: (Object['Human'] | null)[] | null
-  droids: (Object['Droid'] | null)[] | null
-  characters: (Interface['Character'] | null)[] | null
+  humans: Array<Object['Human'] | null> | null
+  droids: Array<Object['Droid'] | null> | null
+  characters: Array<Interface['Character'] | null> | null
   greeting: Scalar['String'] | null
   whoami: Scalar['String'] | null
 }
@@ -88,30 +91,30 @@ export type InputObject = {
 /* Field Types */
 type FieldsTypes = {
   Droid: {
-    id: () => Scalar['ID'] | null
-    name: () => Scalar['String'] | null
-    primaryFunction: () => Scalar['String'] | null
-    appearsIn: () => (Enum['Episode'] | null)[] | null
+    id: () => Object['Droid'] | null
+    name: () => Object['Droid'] | null
+    primaryFunction: () => Object['Droid'] | null
+    appearsIn: () => Array<Object['Droid'] | null> | null
   }
   Human: {
-    id: () => Scalar['ID'] | null
-    name: () => Scalar['String'] | null
-    homePlanet: () => Scalar['String'] | null
-    appearsIn: () => (Enum['Episode'] | null)[] | null
-    infoURL: () => Scalar['String'] | null
+    id: () => Object['Human'] | null
+    name: () => Object['Human'] | null
+    homePlanet: () => Object['Human'] | null
+    appearsIn: () => Array<Object['Human'] | null> | null
+    infoUrl: () => Object['Human'] | null
   }
   Query: {
-    human: (args: {
+    human: (params: {
       id: Scalar['ID']
     }) => <T>(
       selection: SelectionSet<Object['Human'] | null | undefined, T>,
     ) => T
-    droid: (args: {
+    droid: (params: {
       id: Scalar['ID']
     }) => <T>(
       selection: SelectionSet<Object['Droid'] | null | undefined, T>,
     ) => T
-    character: (args: {
+    character: (params: {
       id: Scalar['ID']
     }) => <T>(
       selection: SelectionSet<Union['CharacterUnion'] | null | undefined, T>,
@@ -121,26 +124,26 @@ type FieldsTypes = {
     ) => T
     humans: <T>(
       selection: SelectionSet<
-        (Object['Human'] | null | undefined)[] | null | undefined,
+        Array<Object['Human'] | null | undefined> | null | undefined,
         T
       >,
     ) => T
     droids: <T>(
       selection: SelectionSet<
-        (Object['Droid'] | null | undefined)[] | null | undefined,
+        Array<Object['Droid'] | null | undefined> | null | undefined,
         T
       >,
     ) => T
     characters: <T>(
       selection: SelectionSet<
-        (Interface['Character'] | null | undefined)[] | null | undefined,
+        Array<Interface['Character'] | null | undefined> | null | undefined,
         T
       >,
     ) => T
-    greeting: (args: {
+    greeting: (params: {
       input: InputObject['Greeting'] | null
-    }) => Scalar['String'] | null
-    whoami: () => Scalar['String'] | null
+    }) => Object['Query'] | null
+    whoami: () => Object['Query'] | null
   }
 }
 
@@ -151,52 +154,80 @@ export const objects = {
   ): SelectionSet<Object['Droid'], T> => {
     const decoder = (fields: Fields<Object['Droid']>): T => {
       const types: FieldsTypes['Droid'] = {
+        /* id */
         id: () => {
-          fields.select(leaf('id'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('id', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['id']
+              return data.response.get('id')(argsHash)
           }
         },
+        /* name */
         name: () => {
-          fields.select(leaf('name'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('name', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['name']
+              return data.response.get('name')(argsHash)
           }
         },
+        /* primaryFunction */
         primaryFunction: () => {
-          fields.select(leaf('primaryFunction'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('primaryFunction', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['primaryFunction']
+              return data.response.get('primaryFunction')(argsHash)
           }
         },
+        /* appearsIn */
         appearsIn: () => {
-          fields.select(leaf('appearsIn'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('appearsIn', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['appearsIn']
+              return data.response.get('appearsIn')(argsHash)
           }
         },
       }
@@ -209,64 +240,99 @@ export const objects = {
   ): SelectionSet<Object['Human'], T> => {
     const decoder = (fields: Fields<Object['Human']>): T => {
       const types: FieldsTypes['Human'] = {
+        /* id */
         id: () => {
-          fields.select(leaf('id'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('id', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['id']
+              return data.response.get('id')(argsHash)
           }
         },
+        /* name */
         name: () => {
-          fields.select(leaf('name'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('name', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['name']
+              return data.response.get('name')(argsHash)
           }
         },
+        /* homePlanet */
         homePlanet: () => {
-          fields.select(leaf('homePlanet'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('homePlanet', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['homePlanet']
+              return data.response.get('homePlanet')(argsHash)
           }
         },
+        /* appearsIn */
         appearsIn: () => {
-          fields.select(leaf('appearsIn'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('appearsIn', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['appearsIn']
+              return data.response.get('appearsIn')(argsHash)
           }
         },
+        /* infoUrl */
         infoUrl: () => {
-          fields.select(leaf('infoURL'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('infoURL', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['infoURL']
+              return data.response.get('infoURL')(argsHash)
           }
         },
       }
@@ -279,140 +345,205 @@ export const objects = {
   ): SelectionSet<Object['Query'], T> => {
     const decoder = (fields: Fields<Object['Query']>): T => {
       const types: FieldsTypes['Query'] = {
-        human: (args) => (selection) => {
-          let subfields = new Fields<Object['Human']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('human', subfields.selection))
+        /* human */
+        human: (params) => (selection) => {
+          /* Arguments */
+          const args: Argument[] = [arg('id', 'ID!', params.id)]
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Object['Human'] | null>()
+          let mock = null
+          fields.select(composite('human', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Object['Human']>(
-                data.response['human'],
+              let datasubfields = new Fields<Object['Human'] | null>(
+                data.response.get('human')(argsHash),
               )
               return selection.decoder(datasubfields)
           }
         },
-        droid: (args) => (selection) => {
-          let subfields = new Fields<Object['Droid']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('droid', subfields.selection))
+        /* droid */
+        droid: (params) => (selection) => {
+          /* Arguments */
+          const args: Argument[] = [arg('id', 'ID!', params.id)]
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Object['Droid'] | null>()
+          let mock = null
+          fields.select(composite('droid', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Object['Droid']>(
-                data.response['droid'],
+              let datasubfields = new Fields<Object['Droid'] | null>(
+                data.response.get('droid')(argsHash),
               )
               return selection.decoder(datasubfields)
           }
         },
-        character: (args) => (selection) => {
-          let subfields = new Fields<Union['CharacterUnion']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('character', subfields.selection))
+        /* character */
+        character: (params) => (selection) => {
+          /* Arguments */
+          const args: Argument[] = [arg('id', 'ID!', params.id)]
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Union['CharacterUnion'] | null>()
+          let mock = null
+          fields.select(composite('character', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Union['CharacterUnion']>(
-                data.response['character'],
+              let datasubfields = new Fields<Union['CharacterUnion'] | null>(
+                data.response.get('character')(argsHash),
               )
               return selection.decoder(datasubfields)
           }
         },
+        /* luke */
         luke: (selection) => {
-          let subfields = new Fields<Object['Human']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('luke', subfields.selection))
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Object['Human'] | null>()
+          let mock = null
+          fields.select(composite('luke', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Object['Human']>(
-                data.response['luke'],
+              let datasubfields = new Fields<Object['Human'] | null>(
+                data.response.get('luke')(argsHash),
               )
               return selection.decoder(datasubfields)
           }
         },
+        /* humans */
         humans: (selection) => {
-          let subfields = new Fields<Object['Human']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('humans', subfields.selection))
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Array<Object['Human'] | null> | null>()
+          let mock = null
+          fields.select(composite('humans', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Object['Human']>(
-                data.response['humans'],
-              )
+              let datasubfields = new Fields<Array<
+                Object['Human'] | null
+              > | null>(data.response.get('humans')(argsHash))
               return selection.decoder(datasubfields)
           }
         },
+        /* droids */
         droids: (selection) => {
-          let subfields = new Fields<Object['Droid']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('droids', subfields.selection))
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Array<Object['Droid'] | null> | null>()
+          let mock = null
+          fields.select(composite('droids', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Object['Droid']>(
-                data.response['droids'],
-              )
+              let datasubfields = new Fields<Array<
+                Object['Droid'] | null
+              > | null>(data.response.get('droids')(argsHash))
               return selection.decoder(datasubfields)
           }
         },
+        /* characters */
         characters: (selection) => {
-          let subfields = new Fields<Interface['Character']>()
-          let mock = selection.decoder(subfields)
-          fields.select(composite('characters', subfields.selection))
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          let subfields = new Fields<Array<
+            Interface['Character'] | null
+          > | null>()
+          let mock = null
+          fields.select(composite('characters', subfields.selection, args))
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              let datasubfields = new Fields<Interface['Character']>(
-                data.response['characters'],
-              )
+              let datasubfields = new Fields<Array<
+                Interface['Character'] | null
+              > | null>(data.response.get('characters')(argsHash))
               return selection.decoder(datasubfields)
           }
         },
-        greeting: (args) => {
-          fields.select(leaf('greeting'))
-          let mock = ''
+        /* greeting */
+        greeting: (params) => {
+          /* Arguments */
+          const args: Argument[] = [arg('input', 'Greeting', params.input)]
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('greeting', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['greeting']
+              return data.response.get('greeting')(argsHash)
           }
         },
+        /* whoami */
         whoami: () => {
-          fields.select(leaf('whoami'))
-          let mock = ''
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
 
+          /* Selection */
+          fields.select(leaf('whoami', args))
+          let mock = null
+
+          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
               return mock
             case 'fetched':
-              return data.response['whoami']
+              return data.response.get('whoami')(argsHash)
           }
         },
       }

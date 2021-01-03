@@ -1,9 +1,10 @@
 import { Field } from './document/field'
+import { Dict } from './utils'
 
 /**
  * Collects the fields of a given document.
  */
-export class Fields<TypeLock> {
+export class Fields<TypeLock extends Dict> {
   /* State */
 
   // WIP: Try dictionary structure for fields?
@@ -18,7 +19,8 @@ export class Fields<TypeLock> {
 
     // Set response according to the given data.
     if (data) {
-      this.response = { type: 'fetched', response: data }
+      const response = new ResponseData<TypeLock>(data)
+      this.response = { type: 'fetched', response }
     } else {
       this.response = { type: 'fetching' }
     }
@@ -52,9 +54,41 @@ export class Fields<TypeLock> {
   }
 }
 
+/**
+ * Response union type has two states:
+ *  - fetching while collecting selection
+ *  - fetched while decoding data.
+ */
 export type Response<TypeLock> =
   | { type: 'fetching' }
-  | { type: 'fetched'; response: TypeLock }
+  | { type: 'fetched'; response: ResponseData<TypeLock> }
+
+/**
+ * ResponseData serves as a type port that type annotates
+ * types from dictionary based on their key, irrespectable
+ * of their hash.
+ */
+export class ResponseData<TypeLock extends Dict> {
+  /* State */
+  private data: Dict
+
+  /* Initializer */
+
+  constructor(data: Dict) {
+    this.data = data
+  }
+
+  /* Accessors */
+
+  /**
+   * Returns the value from data.
+   */
+  get<K extends keyof TypeLock & string>(
+    key: K,
+  ): (hash: string) => TypeLock[K] {
+    return (hash) => this.data[`${key}_${hash}`] as any
+  }
+}
 
 /* SelectionSet */
 

@@ -6,13 +6,14 @@ import {
   IntrospectionObjectType,
   IntrospectionScalarType,
   IntrospectionSchema,
+  IntrospectionTypeRef,
   IntrospectionUnionType,
 } from 'graphql'
 import * as prettier from 'prettier'
 import * as os from 'os'
 
-import { getNamedTypeRef } from './ast'
-import { wrap } from './refs'
+import { getNamedTypeRef, invert } from './ast'
+import { wrap, wrapGraphQLSDL } from './refs'
 import { camel, defined, pascal } from './utils'
 
 type ScalarMap = Map<string, string>
@@ -229,7 +230,7 @@ export class GQLGenerator {
    */
   generateImports(): string[] {
     return [
-      "import { composite, leaf, fragment, SelectionSet, Fields, selection } from 'ts-graphql/src/__generator'",
+      "import { composite, leaf, fragment, SelectionSet, Fields, selection, Argument, hash, arg } from 'ts-graphql/src/__generator'",
     ]
   }
 
@@ -287,11 +288,12 @@ export class GQLGenerator {
          * - type contains the unwrapped indexed typed
          * - ref is the whole type that we use to calculate wrapper
          */
-        const type = this.getTypeMapping(getNamedTypeRef(field.type))
-        const ref = field.type
+        const fieldName = field.name
+        const fieldType = this.getTypeMapping(getNamedTypeRef(field.type))
+        const fieldRef = field.type
 
         // TODO: { [hash: string]: wrap(type, ref) }
-        code.push(`${field.name}: ${wrap(type, ref)}`)
+        code.push(`${fieldName}: ${wrap(fieldType, fieldRef)}`)
       }
       code.push(`}`, os.EOL)
     }
@@ -417,7 +419,9 @@ export class GQLGenerator {
       for (const field of type.fields) {
         let chunks: string[] = []
 
-        const type = getNamedTypeRef(field.type)
+        const fieldName = camel(field.name)
+        const fieldType = getNamedTypeRef(field.type)
+        const fieldRef = field.type
 
         // Arguments
         if (field.args.length > 0) {
@@ -429,21 +433,21 @@ export class GQLGenerator {
              * that references the generated code. We use the reference
              * to produce correct (wrapped) type value.
              */
-            const type = this.getTypeMapping(getNamedTypeRef(arg.type))
-            const ref = arg.type
+            const argType = this.getTypeMapping(getNamedTypeRef(arg.type))
+            const argRef = arg.type
 
-            args.push(`${arg.name}: ${wrap(type, ref)}`)
+            args.push(`${arg.name}: ${wrap(argType, argRef)}`)
           }
 
-          chunks.push(`(args: { ${args.join(', ')} })`)
+          chunks.push(`(params: { ${args.join(', ')} })`)
         }
 
         // Selection
-        switch (type.kind) {
+        switch (fieldType.kind) {
           /* Selection Types */
           case 'UNION':
           case 'INTERFACE':
-          case 'OBJECT': {
+          case 'OBJECT':
             /**
              * We defer unwrapping of values to developer land
              * and only make sure that the return type (i.e. typelock) here
@@ -451,35 +455,43 @@ export class GQLGenerator {
              *
              * The `true` in wrapper indicates that nullable fields may be ommitted.
              */
-            const ref = field.type
-            const typelock = wrap(this.getTypeMapping(type), ref, true)
+            const fieldTypeMapping = this.getTypeMapping(fieldType)
+            const typelock = wrap(fieldTypeMapping, fieldRef, true)
+
             chunks.push(`<T>(selection: SelectionSet<${typelock}, T>)`)
             break
-          }
           /* Value Types */
           case 'SCALAR':
-          case 'ENUM': {
+          case 'ENUM':
             // Create a thunk if there's no parameters yet.
             if (chunks.length === 0) {
               chunks.push('()')
             }
+            break
+          /* Throw on unhandled. */
+          default: {
+            throw new Error(`Unhandled case ${fieldType.kind}.`)
           }
         }
 
         // Return type
-        switch (type.kind) {
+        switch (fieldType.kind) {
           /* Selection Types */
           case 'UNION':
           case 'INTERFACE':
-          case 'OBJECT': {
+          case 'OBJECT':
             chunks.push('T')
             break
-          }
+
           /* Value Types */
           case 'SCALAR':
-          case 'ENUM': {
-            const ref = field.type
-            chunks.push(wrap(this.getTypeMapping(type), ref))
+          case 'ENUM':
+            chunks.push(wrap(this.getTypeMapping(type), fieldRef))
+
+            break
+          /* Throw on unhandled. */
+          default: {
+            throw new Error(`Unhandled case ${fieldType.kind}.`)
           }
         }
 
@@ -489,7 +501,7 @@ export class GQLGenerator {
         const fn: string = chunks
           .filter((chunk) => defined<string>(chunk))
           .join(' => ')
-        code.push(`${field.name}: ${fn}`)
+        code.push(`${fieldName}: ${fn}`)
       }
 
       code.push('}')
@@ -536,34 +548,48 @@ export class GQLGenerator {
        * We generate a selection function for every field in the object.
        */
       for (const field of object.fields) {
+        /**
+         * Each field has a set of values that we reuse in each of the
+         * steps below. `fieldName` represents the internal name of the field (i.e. the one used in generated code),
+         * `fieldType` represents the named type of the field, `fieldRef` represents the type with the whole reference,
+         * and `fieldTypeName` represents the mapped instance that is wrapped according
+         * to typeRef.
+         */
         const fieldName = camel(field.name)
         const fieldType = getNamedTypeRef(field.type)
+        const fieldRef = field.type
+        const fieldTypeName = wrap(this.getTypeMapping(fieldType), fieldRef)
+
+        // Make code more readable by adding a comment note.
+        code.push(`/* ${fieldName} */`)
 
         /**
          * First, we build function definition - that is the
          * arguments and everything that funciton needs to work
          * as expected.
+         *
+         * We want to make sure that a function (in TS-land) always has at least one
+         * argument and no more than is needed.
          */
         let definition: string[] = []
 
         if (field.args.length > 0) {
-          definition.push('(args)')
+          definition.push('(params)')
         }
 
         switch (fieldType.kind) {
           case 'UNION':
           case 'INTERFACE':
-          case 'OBJECT': {
+          case 'OBJECT':
             definition.push('(selection)')
             break
-          }
+
           case 'SCALAR':
-          case 'ENUM': {
+          case 'ENUM':
             // Create a thunk if there's no parameters yet.
             if (definition.length === 0) {
               definition.push('()')
             }
-          }
         }
 
         definition.push('{')
@@ -571,77 +597,123 @@ export class GQLGenerator {
         code.push(`${fieldName}: ${definition.join(' => ')}`)
 
         /**
-         * Secondly, we generate selection. Selection
-         * makes a note in the fields object that ts-graphql
-         * uses behind the scenes and checks that this field will
-         * be fetched as well.
+         * Secondly, we generate arguments selection and arguments hashing
+         * function.
+         *
+         * We extract the arguments from args parameter if it exists and turn it into
+         * list of Argument definitions that our library understands.
+         */
+        code.push(`/* Arguments */`)
+        code.push(`const args: Argument[] = [`)
+
+        for (const arg of field.args) {
+          const argName = camel(arg.name)
+          const argRef = arg.type
+          const argTypeName = getNamedTypeRef(arg.type).name
+          const argType = wrapGraphQLSDL(argTypeName, argRef)
+
+          code.push(`arg("${arg.name}", "${argType}", params.${argName})`)
+        }
+
+        code.push(`]`)
+
+        // Hash function
+        code.push(`const argsHash = hash(args)`)
+
+        /**
+         * Thirdly, we generate selection.
+         *
+         * Selection makes a note in the fields object that ts-graphql
+         * uses behind the scenes to generate the GraphQL query. We also
+         * define the mock value here that we use while running the selector
+         * without return values.
+         */
+        const mockValue = this.getTypeMock(fieldRef)
+
+        switch (fieldType.kind) {
+          /* Selection Types */
+          case 'UNION':
+          case 'INTERFACE':
+          case 'OBJECT':
+            /* prettier-ignore */
+            code.push(/* ts */ `
+              /* Selection */
+              let subfields = new Fields<${fieldTypeName}>()
+              let mock = ${mockValue}
+              fields.select(composite('${field.name}', subfields.selection, args))
+            `)
+
+            break
+
+          /* Value Types */
+          case 'SCALAR':
+          case 'ENUM':
+            /**
+             * We use mocking function from utility functions to get the mock value.
+             */
+            /* prettier-ignore */
+            code.push(/* ts */ `
+              /* Selection */
+              fields.select(leaf('${field.name}', args))
+              let mock = ${mockValue}
+            `)
+
+            break
+          /* Throw on unknown. */
+          default: {
+            throw new Error(`Unhandled fieldType ${fieldType.kind}`)
+          }
+        }
+
+        /**
+         * Lastly, we generate response decoders that will spit the
+         * value from the response. Response may be of two different states.
+         *
+         * It's either
+         *  - fetching: meaning we are running the script to get selection, or
+         *  - fetched: meaning we have received the response and are
+         * trying to decode it.
          */
         switch (fieldType.kind) {
           /* Selection Types */
           case 'UNION':
           case 'INTERFACE':
-          case 'OBJECT': {
-            /**
-             * We get the internal mapping of the field type to
-             * reference it in the Fields.
-             */
-            let fieldTypeName = this.getTypeMapping(fieldType)
-
+          case 'OBJECT':
+            /* prettier-ignore */
             code.push(/* ts */ `
-              let subfields = new Fields<${fieldTypeName}>()
-              let mock = selection.decoder(subfields)
-              fields.select(composite('${field.name}', subfields.selection))
-            `)
-
-            break
-          }
-          /* Value Types */
-          case 'SCALAR':
-          case 'ENUM': {
-            code.push(/* ts */ `
-              fields.select(leaf('${field.name}'))
-              let mock = ""
-            `)
-          }
-        }
-
-        // Decoding & Mocking
-        switch (fieldType.kind) {
-          /* Selection Types */
-          case 'UNION':
-          case 'INTERFACE':
-          case 'OBJECT': {
-            /**
-             * We get the internal mapping of the field type to
-             * reference it in the Fields.
-             */
-            let fieldTypeName = this.getTypeMapping(fieldType)
-
-            code.push(/* ts */ `
+              /* Decoder */
               const data = fields.data
               switch (data.type) {
                 case 'fetching':
                   return mock
                 case 'fetched':
-                  let datasubfields = new Fields<${fieldTypeName}>(data.response["${field.name}"])
+                  let datasubfields = new Fields<${fieldTypeName}>(data.response.get("${field.name}")(argsHash))
                   return selection.decoder(datasubfields)
               }
             `)
 
             break
-          }
           /* Value Types */
           case 'SCALAR':
-          case 'ENUM': {
+          case 'ENUM':
+            /* prettier-ignore */
             code.push(/* ts */ `
+              /* Decoder */
               const data = fields.data
               switch (data.type) {
                 case 'fetching':
                   return mock
                 case 'fetched':
-                  return data.response["${field.name}"]
+                  return data.response.get("${field.name}")(argsHash)
               }
             `)
+
+            break
+          /* Throw on unknown. */
+          default: {
+            throw new Error(
+              `Unhandled field kind ${fieldType.kind} in field decoders.`,
+            )
           }
         }
 
@@ -701,6 +773,40 @@ export class GQLGenerator {
         return `Interface['${typeName}']`
       case 'UNION':
         return `Union['${typeName}']`
+    }
+  }
+
+  /**
+   * Returns the mock value for a given type ref.
+   * We always default to bare minimum to get typesystem working.
+   */
+  getTypeMock(ref: IntrospectionTypeRef): string {
+    const iref = invert(ref)
+
+    switch (iref.kind) {
+      /* Nullables & List */
+      case 'NULLABLE':
+        return 'null'
+      /* List */
+      case 'LIST':
+        return '[]'
+      /* Named */
+      case 'ENUM':
+        const id = `${pascal(iref.name)}Enum`
+        return `Object.values(${id})[0]!`
+      case 'SCALAR':
+        const scalar = this.scalar(iref.name)
+        return `${scalar}.mock`
+      /* Selections */
+      case 'UNION':
+      case 'OBJECT':
+      case 'INTERFACE':
+        return 'selection.decoder(subfields)'
+
+      /* Missing */
+      default: {
+        throw new Error(`Unknown reference type mock ${ref.kind}`)
+      }
     }
   }
 }

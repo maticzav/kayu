@@ -5,6 +5,7 @@
  *
  * Instead, import from the index file.
  */
-export { composite, leaf, fragment } from './document/field'
-export { SelectionSet, Fields, selection } from './selection'
+export { Argument, hash, arg } from './document/argument'
+export { composite, fragment, leaf } from './document/field'
 export * from './scalar'
+export { Fields, selection, SelectionSet } from './selection'
