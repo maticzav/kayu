@@ -120,9 +120,9 @@ export class SelectionSet<TypeLock, Type> {
    * We use decoder to generate selection given a top most Fields object
    * and to decode response to desired type.
    */
-  private _fields: Fields<TypeLock>
-  private _decoder: (fields: Fields<TypeLock>) => Type
-  private _mock: Type
+  protected _fields: Fields<TypeLock>
+  protected _decoder: (fields: Fields<TypeLock>) => Type
+  protected _mock: Type
 
   /* Initializer */
 
@@ -157,6 +157,51 @@ export class SelectionSet<TypeLock, Type> {
   decode(data: TypeLock): Type {
     const fields = new Fields<TypeLock>(data)
     return this._decoder(fields)
+  }
+
+  /**
+   * Turns a selection into a list value.
+   */
+  get list(): SelectionSet<TypeLock[], Type[]> {
+    return selection<TypeLock[], Type[]>((decoder) => {
+      /* Selection */
+      for (const field of this.fields) {
+        decoder.select(field)
+      }
+
+      /* Decoder */
+      switch (decoder.data.type) {
+        case 'fetching':
+          return []
+        case 'fetched':
+          const data = decoder.data.response.raw<TypeLock[]>()
+          return data.map((t) => this.decode(t))
+      }
+    })
+  }
+
+  /**
+   * Turns a selection into a list value.
+   */
+  get nullable(): SelectionSet<TypeLock | null, Type | null> {
+    return selection<TypeLock | null, Type | null>((decoder) => {
+      /* Selection */
+      for (const field of this.fields) {
+        decoder.select(field)
+      }
+
+      /* Decoder */
+      switch (decoder.data.type) {
+        case 'fetching':
+          return null
+        case 'fetched':
+          let data = decoder.data.response.raw<TypeLock | null>()
+          if (data !== null) {
+            return this.decode(data)
+          }
+          return null
+      }
+    })
   }
 }
 

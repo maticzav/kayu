@@ -71,7 +71,7 @@ describe('generator', () => {
     })
 
     const pg = api.objects.query((t) => {
-      let human = t.human({ id: '1000' })(pg_human!)
+      let human = t.human({ id: '1000' })(pg_human.nullable)
       return `${human.name}`
     })
 
