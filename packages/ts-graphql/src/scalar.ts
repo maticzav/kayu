@@ -4,20 +4,45 @@ import { Codec } from './codec'
  * Collection of built-in scalars.
  */
 
-declare global {
-  interface String extends Codec<string> {}
-  interface Boolean extends Codec<boolean> {}
-  interface Number extends Codec<number> {}
+const IDCodec: Codec<string> = {
+  type: 'string',
+  mock: `"42"`,
+  serialize: (val) => val,
+  decode: (val) => val as string,
 }
 
-// String.prototype.mockValue = 'Matic Zavadlal'
-// String.prototype.serialize = () => {
-//   return this?.toString()
-// }
-export class StringScalar implements Codec<string> {
-  serialize() {
-    return this
-  }
+const StringCodec: Codec<string> = {
+  type: 'string',
+  mock: `"42"`,
+  serialize: (val) => val,
+  decode: (val) => val as string,
+}
 
-  mockValue = 'Matic Zavadlal'
+const FloatCodec: Codec<number> = {
+  type: 'number',
+  mock: 3.14,
+  serialize: (val) => val,
+  decode: (val) => parseFloat(val as string),
+}
+
+const IntCodec: Codec<number> = {
+  type: 'number',
+  mock: 42,
+  serialize: (val) => val,
+  decode: (val) => parseInt(val as string),
+}
+
+const BoolCodec: Codec<boolean> = {
+  type: 'number',
+  mock: true,
+  serialize: (val) => String(val),
+  decode: (val) => Boolean(val),
+}
+
+export const codecs = {
+  ID: IDCodec,
+  String: StringCodec,
+  Float: FloatCodec,
+  Int: IntCodec,
+  Boolean: BoolCodec,
 }

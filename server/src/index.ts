@@ -1,6 +1,5 @@
 import { ApolloServer } from 'apollo-server-express'
 import * as express from 'express'
-import * as fs from 'fs'
 import { makeSchema } from 'nexus'
 import * as path from 'path'
 
@@ -12,6 +11,10 @@ import { ContextType } from './types/backingTypes'
 
 const schema = makeSchema({
   types: allTypes,
+  nonNullDefaults: {
+    input: true,
+    output: true,
+  },
   outputs: {
     typegen: path.join(
       __dirname,

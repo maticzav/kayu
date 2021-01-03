@@ -10,9 +10,10 @@ import {
   Argument,
   hash,
   arg,
-} from '../../../ts-graphql/src/__generator'
+} from '../../src/__generator'
 
 /* Scalars */
+import * as codecs from '/Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql/tests/__fixtures__/codecs'
 export type Scalar = {
   ID: string
   String: string

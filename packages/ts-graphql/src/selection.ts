@@ -40,8 +40,8 @@ export class Fields<TypeLock extends Dict> {
   /**
    * Selects a field in a selection.
    */
-  select(field: Field) {
-    this.fields.push(field)
+  select(...fields: Field[]) {
+    this.fields.push(...fields)
   }
 
   /* Acessors */
@@ -165,9 +165,7 @@ export class SelectionSet<TypeLock, Type> {
   get list(): SelectionSet<TypeLock[], Type[]> {
     return selection<TypeLock[], Type[]>((decoder) => {
       /* Selection */
-      for (const field of this.fields) {
-        decoder.select(field)
-      }
+      decoder.select(...this.fields)
 
       /* Decoder */
       switch (decoder.data.type) {
@@ -181,14 +179,12 @@ export class SelectionSet<TypeLock, Type> {
   }
 
   /**
-   * Turns a selection into a list value.
+   * Turns a selection into a nullable value.
    */
   get nullable(): SelectionSet<TypeLock | null, Type | null> {
     return selection<TypeLock | null, Type | null>((decoder) => {
       /* Selection */
-      for (const field of this.fields) {
-        decoder.select(field)
-      }
+      decoder.select(...this.fields)
 
       /* Decoder */
       switch (decoder.data.type) {

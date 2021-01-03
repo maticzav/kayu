@@ -8,8 +8,6 @@ import { OperationType, serialize } from '../../ts-graphql/src/document'
 import { GQLGenerator, loadSchemaFromPath, loadSchemaFromURL } from '../src'
 import { defined } from '../src/utils'
 
-import * as api from './__fixtures__/api'
-
 const writefile = promisify(fs.writeFile)
 const prettier = require('../../../prettier.config')
 
@@ -48,38 +46,17 @@ describe('generator', () => {
     /**
      * Construct the generator.
      */
-    const scalars = new Map()
-    const generator = new GQLGenerator(schema, scalars, prettier)
+    const generator = new GQLGenerator(schema, prettier)
 
     /**
      * Save the code and perform tests as described above.
      */
-    const code = generator.generate(path.relative(FIXTURES, CORE_PATH))
+    const code = generator.generate({
+      core: path.relative(FIXTURES, CORE_PATH),
+      codecs: undefined,
+    })
     await writefile(API_PATH, code)
 
     expect(code).toMatchSnapshot()
-  })
-
-  test('tests the API', () => {
-    // const api = require('./__fixtures__/api')
-
-    const pg_human = api.objects.human((t) => {
-      let id = t.id()
-      let name = t.name()
-
-      return { id, name }
-    })
-
-    const pg = api.objects.query((t) => {
-      let human = t.human({ id: '1000' })(pg_human.nullable)
-      return `${human.name}`
-    })
-
-    expect(
-      serialize({
-        fields: pg.fields,
-        operationType: OperationType.Query,
-      }),
-    ).toMatchSnapshot()
   })
 })

@@ -5,12 +5,12 @@ interface Character {
   """
   The id of the character
   """
-  id: ID
+  id: ID!
 
   """
   The name of the character
   """
-  name: String
+  name: String!
 }
 
 union CharacterUnion = Droid | Human
@@ -21,10 +21,10 @@ Date custom scalar type
 scalar Date
 
 type Droid implements Character {
-  appearsIn: [Episode]
-  id: ID
-  name: String
-  primaryFunction: String
+  appearsIn: [Episode!]!
+  id: ID!
+  name: String!
+  primaryFunction: String!
 }
 
 """
@@ -48,27 +48,27 @@ enum Episode {
 }
 
 input Greeting {
-  language: Language
-  name: String
+  language: Language!
+  name: String!
 }
 
 input GreetingOptions {
-  prefix: String
+  prefix: String!
 }
 
 """
 A humanoid creature in the Star Wars universe.
 """
 type Human implements Character {
-  appearsIn: [Episode]
+  appearsIn: [Episode!]!
 
   """
   The home planet of the human, or null if unknown.
   """
   homePlanet: String
-  id: ID
+  id: ID!
   infoURL: String
-  name: String
+  name: String!
 }
 
 enum Language {
@@ -83,22 +83,22 @@ type Query {
     """
     id: ID!
   ): CharacterUnion
-  characters: [Character]
+  characters: [Character!]!
   droid(
     """
     id of the character
     """
     id: ID!
   ): Droid
-  droids: [Droid]
-  greeting(input: Greeting): String
+  droids: [Droid!]!
+  greeting(input: Greeting!): String!
   human(
     """
     id of the character
     """
     id: ID!
   ): Human
-  humans: [Human]
+  humans: [Human!]!
   luke: Human
-  whoami: String
+  whoami: String!
 }
