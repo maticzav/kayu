@@ -128,20 +128,20 @@ export type InputObject = {
   GreetingOptions: GreetingOptionsInputObject
 }
 
-/* Field Types */
-type FieldsTypes = {
+/* Documentation */
+type Documentation = {
   Droid: {
-    id: () => Object['Droid'] | null
-    name: () => Object['Droid'] | null
-    primaryFunction: () => Object['Droid'] | null
-    appearsIn: () => Array<Object['Droid'] | null> | null
+    id: () => Scalar['ID'] | null
+    name: () => Scalar['String'] | null
+    primaryFunction: () => Scalar['String'] | null
+    appearsIn: () => Array<Enum['Episode'] | null> | null
   }
   Human: {
-    id: () => Object['Human'] | null
-    name: () => Object['Human'] | null
-    homePlanet: () => Object['Human'] | null
-    appearsIn: () => Array<Object['Human'] | null> | null
-    infoUrl: () => Object['Human'] | null
+    id: () => Scalar['ID'] | null
+    name: () => Scalar['String'] | null
+    homePlanet: () => Scalar['String'] | null
+    appearsIn: () => Array<Enum['Episode'] | null> | null
+    infoUrl: () => Scalar['String'] | null
   }
   Query: {
     human: (params: {
@@ -182,33 +182,45 @@ type FieldsTypes = {
     ) => T
     greeting: (params: {
       input: InputObject['Greeting'] | null
-    }) => Object['Query'] | null
-    whoami: () => Object['Query'] | null
+    }) => Scalar['String'] | null
+    whoami: () => Scalar['String'] | null
+  }
+  Character: {
+    id: () => Scalar['ID'] | null
+    name: () => Scalar['String'] | null
+    on: <T>(selectors: {
+      droid: SelectionSet<Object['Droid'], T>
+      human: SelectionSet<Object['Human'], T>
+    }) => T
+  }
+  CharacterUnion: {
+    on: <T>(selectors: {
+      human: SelectionSet<Object['Human'], T>
+      droid: SelectionSet<Object['Droid'], T>
+    }) => T
   }
 }
 
 /* Selections */
 export const objects = {
   droid: <T>(
-    selector: (fields: FieldsTypes['Droid']) => T,
+    selector: (fields: Documentation['Droid']) => T,
   ): SelectionSet<Object['Droid'], T> => {
     const decoder = (fields: Fields<Object['Droid']>): T => {
-      const types: FieldsTypes['Droid'] = {
+      const types: Documentation['Droid'] = {
         /* id */
         id: () => {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('id', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('id')(argsHash)
           }
@@ -218,16 +230,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('name', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('name')(argsHash)
           }
@@ -237,16 +247,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('primaryFunction', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('primaryFunction')(argsHash)
           }
@@ -256,16 +264,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('appearsIn', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('appearsIn')(argsHash)
           }
@@ -276,25 +282,23 @@ export const objects = {
     return selection(decoder)
   },
   human: <T>(
-    selector: (fields: FieldsTypes['Human']) => T,
+    selector: (fields: Documentation['Human']) => T,
   ): SelectionSet<Object['Human'], T> => {
     const decoder = (fields: Fields<Object['Human']>): T => {
-      const types: FieldsTypes['Human'] = {
+      const types: Documentation['Human'] = {
         /* id */
         id: () => {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('id', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('id')(argsHash)
           }
@@ -304,16 +308,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('name', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('name')(argsHash)
           }
@@ -323,16 +325,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('homePlanet', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('homePlanet')(argsHash)
           }
@@ -342,16 +342,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('appearsIn', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('appearsIn')(argsHash)
           }
@@ -361,16 +359,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('infoURL', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('infoURL')(argsHash)
           }
@@ -381,31 +377,25 @@ export const objects = {
     return selection(decoder)
   },
   query: <T>(
-    selector: (fields: FieldsTypes['Query']) => T,
+    selector: (fields: Documentation['Query']) => T,
   ): SelectionSet<Object['Query'], T> => {
     const decoder = (fields: Fields<Object['Query']>): T => {
-      const types: FieldsTypes['Query'] = {
+      const types: Documentation['Query'] = {
         /* human */
         human: (params) => (selection) => {
           /* Arguments */
           const args: Argument[] = [arg('id', 'ID!', params.id)]
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Object['Human'] | null>()
-          let mock = null
-          fields.select(composite('human', subfields.selection, args))
+          fields.select(composite('human', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Object['Human'] | null>(
-                data.response.get('human')(argsHash),
-              )
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('human')(argsHash))
           }
         },
         /* droid */
@@ -413,22 +403,16 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = [arg('id', 'ID!', params.id)]
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Object['Droid'] | null>()
-          let mock = null
-          fields.select(composite('droid', subfields.selection, args))
+          fields.select(composite('droid', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Object['Droid'] | null>(
-                data.response.get('droid')(argsHash),
-              )
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('droid')(argsHash))
           }
         },
         /* character */
@@ -436,22 +420,16 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = [arg('id', 'ID!', params.id)]
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Union['CharacterUnion'] | null>()
-          let mock = null
-          fields.select(composite('character', subfields.selection, args))
+          fields.select(composite('character', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Union['CharacterUnion'] | null>(
-                data.response.get('character')(argsHash),
-              )
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('character')(argsHash))
           }
         },
         /* luke */
@@ -459,22 +437,16 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Object['Human'] | null>()
-          let mock = null
-          fields.select(composite('luke', subfields.selection, args))
+          fields.select(composite('luke', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Object['Human'] | null>(
-                data.response.get('luke')(argsHash),
-              )
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('luke')(argsHash))
           }
         },
         /* humans */
@@ -482,22 +454,16 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Array<Object['Human'] | null> | null>()
-          let mock = null
-          fields.select(composite('humans', subfields.selection, args))
+          fields.select(composite('humans', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Array<
-                Object['Human'] | null
-              > | null>(data.response.get('humans')(argsHash))
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('humans')(argsHash))
           }
         },
         /* droids */
@@ -505,22 +471,16 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Array<Object['Droid'] | null> | null>()
-          let mock = null
-          fields.select(composite('droids', subfields.selection, args))
+          fields.select(composite('droids', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Array<
-                Object['Droid'] | null
-              > | null>(data.response.get('droids')(argsHash))
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('droids')(argsHash))
           }
         },
         /* characters */
@@ -528,24 +488,16 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
-          let subfields = new Fields<Array<
-            Interface['Character'] | null
-          > | null>()
-          let mock = null
-          fields.select(composite('characters', subfields.selection, args))
+          fields.select(composite('characters', selection.fields, args))
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
-              let datasubfields = new Fields<Array<
-                Interface['Character'] | null
-              > | null>(data.response.get('characters')(argsHash))
-              return selection.decoder(datasubfields)
+              return selection.decode(data.response.get('characters')(argsHash))
           }
         },
         /* greeting */
@@ -553,16 +505,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = [arg('input', 'Greeting', params.input)]
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('greeting', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('greeting')(argsHash)
           }
@@ -572,16 +522,14 @@ export const objects = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('whoami', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('whoami')(argsHash)
           }
@@ -595,10 +543,35 @@ export const objects = {
 
 export const unions = {
   characterUnion: <T>(
-    selector: (fields: FieldsTypes['CharacterUnion']) => T,
+    selector: (fields: Documentation['CharacterUnion']) => T,
   ): SelectionSet<Union['CharacterUnion'], T> => {
     const decoder = (fields: Fields<Union['CharacterUnion']>): T => {
-      const types: FieldsTypes['CharacterUnion'] = {}
+      const types: Documentation['CharacterUnion'] = {
+        on: <T>(selectors: {
+          human: SelectionSet<Object['Human'], T>
+          droid: SelectionSet<Object['Droid'], T>
+        }) => {
+          /* Selection */
+          fields.select(fragment('Human', selectors.human.fields))
+          fields.select(fragment('Droid', selectors.droid.fields))
+
+          /* Mock & Decoder */
+          const data = fields.data
+          switch (data.type) {
+            case 'fetching':
+              return selectors.human.mock
+            case 'fetched':
+              switch (data.response.typename) {
+                case 'Human':
+                  return selectors.human.decode(data.response.raw())
+                case 'Droid':
+                  return selectors.droid.decode(data.response.raw())
+                default:
+                  throw new Error(`Unknown type ${data.response.typename}`)
+              }
+          }
+        },
+      }
       return selector(types)
     }
     return selection(decoder)
@@ -607,25 +580,23 @@ export const unions = {
 
 export const interfaces = {
   character: <T>(
-    selector: (fields: FieldsTypes['Character']) => T,
+    selector: (fields: Documentation['Character']) => T,
   ): SelectionSet<Interface['Character'], T> => {
     const decoder = (fields: Fields<Interface['Character']>): T => {
-      const types: FieldsTypes['Character'] = {
+      const types: Documentation['Character'] = {
         /* id */
         id: () => {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('id', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('id')(argsHash)
           }
@@ -635,18 +606,40 @@ export const interfaces = {
           /* Arguments */
           const args: Argument[] = []
           const argsHash = hash(args)
-
           /* Selection */
           fields.select(leaf('name', args))
-          let mock = null
+          /* Mock & Decoder */
 
-          /* Decoder */
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return mock
+              return null
             case 'fetched':
               return data.response.get('name')(argsHash)
+          }
+        },
+        on: <T>(selectors: {
+          droid: SelectionSet<Object['Droid'], T>
+          human: SelectionSet<Object['Human'], T>
+        }) => {
+          /* Selection */
+          fields.select(fragment('Droid', selectors.droid.fields))
+          fields.select(fragment('Human', selectors.human.fields))
+
+          /* Mock & Decoder */
+          const data = fields.data
+          switch (data.type) {
+            case 'fetching':
+              return selectors.droid.mock
+            case 'fetched':
+              switch (data.response.typename) {
+                case 'Droid':
+                  return selectors.droid.decode(data.response.raw())
+                case 'Human':
+                  return selectors.human.decode(data.response.raw())
+                default:
+                  throw new Error(`Unknown type ${data.response.typename}`)
+              }
           }
         },
       }

@@ -81,12 +81,26 @@ export class ResponseData<TypeLock extends Dict> {
   /* Accessors */
 
   /**
+   * Returns the typename of the underlying response.
+   */
+  get typename(): string {
+    return this.data['__typename'] as any
+  }
+
+  /**
    * Returns the value from data.
    */
   get<K extends keyof TypeLock & string>(
     key: K,
   ): (hash: string) => TypeLock[K] {
     return (hash) => this.data[`${key}_${hash}`] as any
+  }
+
+  /**
+   * Allows access to the actual return values.
+   */
+  raw<T>(): T {
+    return this.data as T
   }
 }
 
@@ -99,12 +113,51 @@ export class ResponseData<TypeLock extends Dict> {
  *
  * Decoder is the central place of query building and exectuion.
  */
-export type SelectionSet<TypeLock, Type> = {
+export class SelectionSet<TypeLock, Type> {
+  /* State */
+
   /**
    * We use decoder to generate selection given a top most Fields object
    * and to decode response to desired type.
    */
-  decoder: (fields: Fields<TypeLock>) => Type
+  private _fields: Fields<TypeLock>
+  private _decoder: (fields: Fields<TypeLock>) => Type
+  private _mock: Type
+
+  /* Initializer */
+
+  constructor(decoder: (fields: Fields<TypeLock>) => Type) {
+    this._decoder = decoder
+    this._fields = new Fields<TypeLock>()
+    /* Make an initial selection and populate fields. */
+    this._mock = decoder(this._fields)
+  }
+
+  /* Accessors */
+
+  /**
+   * Returns a selection of given selection set.
+   */
+  get fields(): Field[] {
+    return this._fields.selection
+  }
+
+  /**
+   * Returns the mock value used for gathering selection.
+   */
+  get mock(): Type {
+    return this._mock
+  }
+
+  /* Methods */
+
+  /**
+   * Decodes selection set using a given data.
+   */
+  decode(data: TypeLock): Type {
+    const fields = new Fields<TypeLock>(data)
+    return this._decoder(fields)
+  }
 }
 
 /**
@@ -113,6 +166,5 @@ export type SelectionSet<TypeLock, Type> = {
 export function selection<TypeLock, Type>(
   decoder: (fields: Fields<TypeLock>) => Type,
 ): SelectionSet<TypeLock, Type> {
-  return { decoder }
-  // return new SelectionSet(type, decoder)
+  return new SelectionSet<TypeLock, Type>(decoder)
 }

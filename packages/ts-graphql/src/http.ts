@@ -75,17 +75,14 @@ async function perform<TypeLock, Type>(
   opts: PerformInput<TypeLock, Type>,
 ): Promise<Type> {
   /* Construct a request. */
-  let fields = new Fields<TypeLock>()
-  opts.selection.decoder(fields)
-
   const query = serialize({
-    fields: fields.selection,
+    fields: opts.selection.fields,
     operationType: opts.operation,
     operationName: opts.operationName,
   })
 
   let variables: { [hash: string]: any } = {}
-  for (const arg of argumentsOfFields(fields.selection)) {
+  for (const arg of argumentsOfFields(opts.selection.fields)) {
     if (defined(arg.value)) {
       variables[hash([arg])] = arg.value
     }
@@ -108,11 +105,11 @@ async function perform<TypeLock, Type>(
       ...opts.headers,
       'Content-Type': 'application/json',
     },
-  })
+  }).then((res) => res.json())
 
   /* Decode the result. */
-  const data = await res.json()
-  const fieldsWithData = new Fields<TypeLock>(data)
+  // TODO: not exactly correct...
+  const data = opts.selection.decode(res)
 
-  return opts.selection.decoder(fieldsWithData)
+  return data
 }

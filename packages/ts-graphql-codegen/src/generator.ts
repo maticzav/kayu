@@ -1,4 +1,5 @@
 import {
+  getNamedType,
   IntrospectionEnumType,
   IntrospectionField,
   IntrospectionInputObjectType,
@@ -7,6 +8,7 @@ import {
   IntrospectionObjectType,
   IntrospectionScalarType,
   IntrospectionSchema,
+  IntrospectionType,
   IntrospectionTypeRef,
   IntrospectionUnionType,
 } from 'graphql'
@@ -226,10 +228,10 @@ export class GQLGenerator {
       ...this.generateEnums(),
       os.EOL,
       ...this.generateInputObjects(),
-      /* Field types */
+      /* Documentation */
       os.EOL,
-      '/* Field Types */',
-      ...this.generateFieldTypes(),
+      '/* Documentation */',
+      ...this.generateDocumentation(),
       /* Selections */
       os.EOL,
       '/* Selections */',
@@ -522,124 +524,192 @@ export class GQLGenerator {
     return code
   }
 
-  /* Field Types */
+  /* Documentation */
 
   /**
-   * FieldTypes represent all the possible fields user may use to make a selection in a given type.
-   * This function creates a type-dictionary of these fields (i.e. for each type in the schema one branch).
+   * Documentation predefines all type definitions. This way, we get better IDE support and types.
    */
-  generateFieldTypes(): string[] {
+  generateDocumentation(): string[] {
     let code: string[] = []
 
-    code.push('type FieldsTypes = {')
+    code.push('type Documentation = {')
 
     /**
-     * Examine each type in the schema and push the selection to the code.
+     * We generate documentation for every type in the schema.
+     * Each of them uses one of the two helper functions defined below.
      */
-    for (const type of this.objects()) {
-      code.push(`${type.name}: {`)
 
-      /**
-       * Generate appropriate field definition for each field in a type.
-       * Each function may accept a selection, arguments or both.
-       *
-       * We make sure that we always generate a function, even if it's a thunk.
-       */
-      for (const field of type.fields) {
-        let chunks: string[] = []
+    /* Objects */
+    for (const object of this.objects()) {
+      code.push(`${object.name}: {`)
 
-        const fieldName = camel(field.name)
-        const fieldType = getNamedTypeRef(field.type)
-        const fieldRef = field.type
-
-        // Arguments
-        if (field.args.length > 0) {
-          let args: string[] = []
-
-          for (const arg of field.args) {
-            /**
-             * We map each argument to a given type mapping
-             * that references the generated code. We use the reference
-             * to produce correct (wrapped) type value.
-             */
-            const argType = this.getTypeMapping(getNamedTypeRef(arg.type))
-            const argRef = arg.type
-
-            args.push(`${arg.name}: ${wrap(argType, argRef)}`)
-          }
-
-          chunks.push(`(params: { ${args.join(', ')} })`)
-        }
-
-        // Selection
-        switch (fieldType.kind) {
-          /* Selection Types */
-          case 'UNION':
-          case 'INTERFACE':
-          case 'OBJECT':
-            /**
-             * We defer unwrapping of values to developer land
-             * and only make sure that the return type (i.e. typelock) here
-             * matches the return value of the field.
-             *
-             * The `true` in wrapper indicates that nullable fields may be ommitted.
-             */
-            const fieldTypeMapping = this.getTypeMapping(fieldType)
-            const typelock = wrap(fieldTypeMapping, fieldRef, true)
-
-            chunks.push(`<T>(selection: SelectionSet<${typelock}, T>)`)
-            break
-          /* Value Types */
-          case 'SCALAR':
-          case 'ENUM':
-            // Create a thunk if there's no parameters yet.
-            if (chunks.length === 0) {
-              chunks.push('()')
-            }
-            break
-          /* Throw on unhandled. */
-          default: {
-            throw new Error(`Unhandled case ${fieldType.kind}.`)
-          }
-        }
-
-        // Return type
-        switch (fieldType.kind) {
-          /* Selection Types */
-          case 'UNION':
-          case 'INTERFACE':
-          case 'OBJECT':
-            chunks.push('T')
-            break
-
-          /* Value Types */
-          case 'SCALAR':
-          case 'ENUM':
-            chunks.push(wrap(this.getTypeMapping(type), fieldRef))
-
-            break
-          /* Throw on unhandled. */
-          default: {
-            throw new Error(`Unhandled case ${fieldType.kind}.`)
-          }
-        }
-
-        /**
-         * We merge the chunks into a single function declaration string.
-         */
-        const fn: string = chunks
-          .filter((chunk) => defined<string>(chunk))
-          .join(' => ')
-        code.push(`${fieldName}: ${fn}`)
+      for (const field of object.fields) {
+        code.push(...this.generateFieldDocumentation(object, field))
       }
 
       code.push('}')
     }
 
+    /* Interfaces */
+    for (const interfac of this.interfaces()) {
+      code.push(`${interfac.name}: {`)
+
+      /**
+       * Generate fields for common types and fragment selection
+       * for possible types.
+       */
+      for (const field of interfac.fields) {
+        code.push(...this.generateFieldDocumentation(interfac, field))
+      }
+      code.push(...this.generateFragmentDocumentation(interfac.possibleTypes))
+
+      code.push('}')
+    }
+
+    /* Unions */
+    for (const union of this.unions()) {
+      code.push(`${union.name}: {`)
+
+      /**
+       * Only generate fragment selection for union.
+       */
+      code.push(...this.generateFragmentDocumentation(union.possibleTypes))
+
+      code.push('}')
+    }
+
+    /* End documentation */
     code.push('}')
 
     return code
   }
+
+  /**
+   * This is a utility function for generating field documentation.
+   * We use it in `generateDocumentation` function.
+   *
+   * We make sure that we always generate a function, even if it's a thunk.
+   */
+  generateFieldDocumentation(
+    type: IntrospectionType,
+    field: IntrospectionField,
+  ): string[] {
+    let chunks: string[] = []
+
+    const fieldName = camel(field.name)
+    const fieldType = getNamedTypeRef(field.type)
+    const fieldRef = field.type
+
+    // Arguments
+    if (field.args.length > 0) {
+      let args: string[] = []
+
+      for (const arg of field.args) {
+        /**
+         * We map each argument to a given type mapping
+         * that references the generated code. We use the reference
+         * to produce correct (wrapped) type value.
+         */
+        const argType = this.getTypeMapping(getNamedTypeRef(arg.type))
+        const argRef = arg.type
+
+        args.push(`${arg.name}: ${wrap(argType, argRef)}`)
+      }
+
+      chunks.push(`(params: { ${args.join(', ')} })`)
+    }
+
+    // Selection
+    switch (fieldType.kind) {
+      /* Selection Types */
+      case 'UNION':
+      case 'INTERFACE':
+      case 'OBJECT':
+        /**
+         * We defer unwrapping of values to developer land
+         * and only make sure that the return type (i.e. typelock) here
+         * matches the return value of the field.
+         *
+         * The `true` in wrapper indicates that nullable fields may be ommitted.
+         */
+        const fieldTypeMapping = this.getTypeMapping(fieldType)
+        const typelock = wrap(fieldTypeMapping, fieldRef, true)
+
+        chunks.push(`<T>(selection: SelectionSet<${typelock}, T>)`)
+        break
+      /* Value Types */
+      case 'SCALAR':
+      case 'ENUM':
+        // Create a thunk if there's no parameters yet.
+        if (chunks.length === 0) {
+          chunks.push('()')
+        }
+        break
+      /* Throw on unhandled. */
+      default: {
+        throw new Error(`Unhandled case ${fieldType.kind}.`)
+      }
+    }
+
+    // Return type
+    switch (fieldType.kind) {
+      /* Selection Types */
+      case 'UNION':
+      case 'INTERFACE':
+      case 'OBJECT':
+        chunks.push('T')
+        break
+
+      /* Value Types */
+      case 'SCALAR':
+      case 'ENUM':
+        chunks.push(wrap(this.getTypeMapping(fieldType), fieldRef))
+
+        break
+      /* Throw on unhandled. */
+      default: {
+        throw new Error(`Unhandled case ${fieldType.kind}.`)
+      }
+    }
+
+    /**
+     * We merge the chunks into a single function declaration string.
+     */
+    const fn: string = chunks
+      .filter((chunk) => defined<string>(chunk))
+      .join(' => ')
+
+    return [`${fieldName}: ${fn}`]
+  }
+
+  /**
+   * A utility function that we use to generate documentation
+   * for fragments. We use it in `generateDocumentation` function
+   * when generating union and interface types.
+   */
+  generateFragmentDocumentation(
+    objects: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[],
+  ): string[] {
+    let code: string[] = []
+
+    /**
+     * We create a separate selector for every possible interface.
+     * All of them are required.
+     */
+    code.push(`on: <T>(selectors: {`)
+    for (const object of objects) {
+      const fieldName = camel(object.name)
+      const typeName = this.getTypeMapping(object)
+
+      code.push(`${fieldName}: SelectionSet<${typeName}, T>,`)
+    }
+
+    code.push(`}) => T`)
+
+    return code
+  }
+
+  /* Selection */
 
   /**
    * Generates a selection of functions that developers may
@@ -664,14 +734,14 @@ export class GQLGenerator {
 
       /* Selector  */
       /* prettier-ignore */
-      code.push(`${typeField}: <T>(selector: (fields: FieldsTypes['${typeName}']) => T): SelectionSet<Object['${typeName}'], T> => {`)
+      code.push(`${typeField}: <T>(selector: (fields: Documentation['${typeName}']) => T): SelectionSet<Object['${typeName}'], T> => {`)
 
       /* Decoder */
       /* prettier-ignore */
       code.push(`const decoder = (fields: Fields<Object['${typeName}']>): T => {`)
 
       /* Types */
-      code.push(`const types: FieldsTypes['${typeName}'] = {`)
+      code.push(`const types: Documentation['${typeName}'] = {`)
 
       /**
        * We generate a selection function for every field in the object.
@@ -717,14 +787,14 @@ export class GQLGenerator {
 
       /* Selector */
       /* prettier-ignore */
-      code.push(`${interfaceField}: <T>(selector: (fields: FieldsTypes['${interfaceName}']) => T): SelectionSet<Interface['${interfaceName}'], T> => {`)
+      code.push(`${interfaceField}: <T>(selector: (fields: Documentation['${interfaceName}']) => T): SelectionSet<Interface['${interfaceName}'], T> => {`)
 
       /* Decoder */
       /* prettier-ignore */
       code.push(`const decoder = (fields: Fields<Interface['${interfaceName}']>): T => {`)
 
       /* Types */
-      code.push(`const types: FieldsTypes['${interfaceName}'] = {`)
+      code.push(`const types: Documentation['${interfaceName}'] = {`)
 
       /**
        * We generate a selection function for every field in the interface,
@@ -733,7 +803,7 @@ export class GQLGenerator {
       for (const field of interfac.fields) {
         code.push(...this.generateField(field))
       }
-      this.generateFragments(interfac.possibleTypes)
+      code.push(...this.generateFragments(interfac.possibleTypes))
 
       code.push('}')
       /* Ends types */
@@ -772,20 +842,20 @@ export class GQLGenerator {
 
       /* Selector  */
       /* prettier-ignore */
-      code.push(`${unionField}: <T>(selector: (fields: FieldsTypes['${unionName}']) => T): SelectionSet<Union['${unionName}'], T> => {`)
+      code.push(`${unionField}: <T>(selector: (fields: Documentation['${unionName}']) => T): SelectionSet<Union['${unionName}'], T> => {`)
 
       /* Decoder */
       /* prettier-ignore */
       code.push(`const decoder = (fields: Fields<Union['${unionName}']>): T => {`)
 
       /* Types */
-      code.push(`const types: FieldsTypes['${unionName}'] = {`)
+      code.push(`const types: Documentation['${unionName}'] = {`)
 
       /**
        * Union types only have `on` function and we add it here as
        * a fragment selection.
        */
-      this.generateFragments(union.possibleTypes)
+      code.push(...this.generateFragments(union.possibleTypes))
 
       code.push('}')
       /* Ends types */
@@ -891,21 +961,14 @@ export class GQLGenerator {
      * define the mock value here that we use while running the selector
      * without return values.
      */
-    const mockValue = this.getTypeMock(fieldRef)
-
+    code.push(`/* Selection */`)
     switch (fieldType.kind) {
       /* Selection Types */
       case 'UNION':
       case 'INTERFACE':
       case 'OBJECT':
         /* prettier-ignore */
-        code.push(/* ts */ `
-              /* Selection */
-              let subfields = new Fields<${fieldTypeName}>()
-              let mock = ${mockValue}
-              fields.select(composite('${field.name}', subfields.selection, args))
-            `)
-
+        code.push(`fields.select(composite('${field.name}', selection.fields, args))`)
         break
 
       /* Value Types */
@@ -914,12 +977,7 @@ export class GQLGenerator {
         /**
          * We use mocking function from utility functions to get the mock value.
          */
-        /* prettier-ignore */
-        code.push(/* ts */ `
-              /* Selection */
-              fields.select(leaf('${field.name}', args))
-              let mock = ${mockValue}
-            `)
+        code.push(`fields.select(leaf('${field.name}', args))`)
 
         break
       /* Throw on unknown. */
@@ -937,48 +995,16 @@ export class GQLGenerator {
      *  - fetched: meaning we have received the response and are
      * trying to decode it.
      */
-    switch (fieldType.kind) {
-      /* Selection Types */
-      case 'UNION':
-      case 'INTERFACE':
-      case 'OBJECT':
-        /* prettier-ignore */
-        code.push(/* ts */ `
-              /* Decoder */
-              const data = fields.data
-              switch (data.type) {
-                case 'fetching':
-                  return mock
-                case 'fetched':
-                  let datasubfields = new Fields<${fieldTypeName}>(data.response.get("${field.name}")(argsHash))
-                  return selection.decoder(datasubfields)
-              }
-            `)
-
-        break
-      /* Value Types */
-      case 'SCALAR':
-      case 'ENUM':
-        /* prettier-ignore */
-        code.push(/* ts */ `
-              /* Decoder */
-              const data = fields.data
-              switch (data.type) {
-                case 'fetching':
-                  return mock
-                case 'fetched':
-                  return data.response.get("${field.name}")(argsHash)
-              }
-            `)
-
-        break
-      /* Throw on unknown. */
-      default: {
-        throw new Error(
-          `Unhandled field kind ${fieldType.kind} in field decoders.`,
-        )
-      }
-    }
+    code.push(`/* Mock & Decoder */`)
+    code.push(/* ts */ `
+      const data = fields.data
+      switch (data.type) {
+        case 'fetching':
+          return ${this.getTypeMock(fieldRef)}
+        case 'fetched':
+          return ${this.getTypeDecoder(field)}
+      }  
+    `)
 
     code.push('},')
 
@@ -991,9 +1017,64 @@ export class GQLGenerator {
    * using `on` function.
    */
   generateFragments(
-    types: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[],
+    objects: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[],
   ): string[] {
-    return []
+    let code: string[] = []
+
+    /**
+     * First create function definition
+     */
+    code.push(`on: <T>(selectors: {`)
+    for (const object of objects) {
+      const fieldName = camel(object.name)
+      const typeLock = this.getTypeMapping(object)
+
+      code.push(`${fieldName}: SelectionSet<${typeLock}, T>,`)
+    }
+
+    code.push(`}) => {`)
+
+    /**
+     * Create function selection.
+     */
+    code.push(`/* Selection */`)
+    for (const object of objects) {
+      const fieldName = camel(object.name)
+      const fieldType = object.name
+
+      /* prettier-ignore */
+      code.push(`fields.select(fragment('${fieldType}', selectors.${fieldName}.fields))`)
+    }
+    code.push(os.EOL)
+
+    /**
+     * Create function decoder. We rely on __typename
+     * field in the result to correctly select return object.
+     */
+    code.push(`
+      /* Mock & Decoder */
+      const data = fields.data
+      switch (data.type) {
+        case 'fetching':
+          return selectors.${camel(objects[0].name!)}.mock
+        case 'fetched':
+          switch (data.response.typename) {
+    `)
+
+    for (const object of objects) {
+      code.push(`case '${object.name}':`)
+      /* prettier-ignore */
+      code.push(`return selectors.${camel(object.name)}.decode(data.response.raw())`)
+    }
+
+    /* prettier-ignore */
+    code.push("default: throw new Error(`Unknown type ${data.response.typename}`)")
+    code.push(`}`)
+    code.push(`}`)
+
+    code.push('},')
+
+    return code
   }
 
   /* Utility functions */
@@ -1046,11 +1127,34 @@ export class GQLGenerator {
       case 'UNION':
       case 'OBJECT':
       case 'INTERFACE':
-        return 'selection.decoder(subfields)'
+        return 'selection.mock'
 
       /* Missing */
       default: {
         throw new Error(`Unknown reference type mock ${ref.kind}`)
+      }
+    }
+  }
+
+  /**
+   * Returns the expression that decodes the return value of the query.
+   */
+  getTypeDecoder(field: IntrospectionField): string {
+    const type = getNamedTypeRef(field.type)
+
+    switch (type.kind) {
+      /* Selection Types */
+      case 'UNION':
+      case 'INTERFACE':
+      case 'OBJECT':
+        return `selection.decode(data.response.get('${field.name}')(argsHash))`
+      /* Value Types */
+      case 'SCALAR':
+      case 'ENUM':
+        return `data.response.get("${field.name}")(argsHash)`
+      /* Throw on unknown. */
+      default: {
+        throw new Error(`Unhandled field kind ${type.kind} in field decoders.`)
       }
     }
   }
