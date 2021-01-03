@@ -19,8 +19,9 @@ export type Scalar = {
   Bool: boolean
 }
 
-/* Objects */
+/* Types */
 type DroidObject = {
+  __typename: 'Droid'
   id: Scalar['ID'] | null
   name: Scalar['String'] | null
   primaryFunction: Scalar['String'] | null
@@ -28,6 +29,7 @@ type DroidObject = {
 }
 
 type HumanObject = {
+  __typename: 'Human'
   id: Scalar['ID'] | null
   name: Scalar['String'] | null
   homePlanet: Scalar['String'] | null
@@ -36,6 +38,7 @@ type HumanObject = {
 }
 
 type QueryObject = {
+  __typename: 'Query'
   human: Object['Human'] | null
   droid: Object['Droid'] | null
   character: Union['CharacterUnion'] | null
@@ -53,7 +56,48 @@ export type Object = {
   Query: QueryObject
 }
 
-/* Enums */
+type CharacterInterface =
+  | {
+      __typename: 'Droid'
+      id: Scalar['ID'] | null
+      name: Scalar['String'] | null
+      primaryFunction: Scalar['String'] | null
+      appearsIn: Array<Enum['Episode'] | null> | null
+    }
+  | {
+      __typename: 'Human'
+      id: Scalar['ID'] | null
+      name: Scalar['String'] | null
+      homePlanet: Scalar['String'] | null
+      appearsIn: Array<Enum['Episode'] | null> | null
+      infoURL: Scalar['String'] | null
+    }
+
+export type Interface = {
+  Character: CharacterInterface
+}
+
+type CharacterUnionUnion =
+  | {
+      __typename: 'Human'
+      id: Scalar['ID'] | null
+      name: Scalar['String'] | null
+      homePlanet: Scalar['String'] | null
+      appearsIn: Array<Enum['Episode'] | null> | null
+      infoURL: Scalar['String'] | null
+    }
+  | {
+      __typename: 'Droid'
+      id: Scalar['ID'] | null
+      name: Scalar['String'] | null
+      primaryFunction: Scalar['String'] | null
+      appearsIn: Array<Enum['Episode'] | null> | null
+    }
+
+export type Union = {
+  CharacterUnion: CharacterUnionUnion
+}
+
 enum EpisodeEnum {
   NEWHOPE = 'NEWHOPE',
   EMPIRE = 'EMPIRE',
@@ -70,7 +114,6 @@ export type Enum = {
   Language: LanguageEnum
 }
 
-/* Input Objects */
 type GreetingInputObject = {
   language: Enum['Language'] | null | undefined
   name: Scalar['String'] | null | undefined
@@ -541,6 +584,69 @@ export const objects = {
               return mock
             case 'fetched':
               return data.response.get('whoami')(argsHash)
+          }
+        },
+      }
+      return selector(types)
+    }
+    return selection(decoder)
+  },
+}
+
+export const unions = {
+  characterUnion: <T>(
+    selector: (fields: FieldsTypes['CharacterUnion']) => T,
+  ): SelectionSet<Union['CharacterUnion'], T> => {
+    const decoder = (fields: Fields<Union['CharacterUnion']>): T => {
+      const types: FieldsTypes['CharacterUnion'] = {}
+      return selector(types)
+    }
+    return selection(decoder)
+  },
+}
+
+export const interfaces = {
+  character: <T>(
+    selector: (fields: FieldsTypes['Character']) => T,
+  ): SelectionSet<Interface['Character'], T> => {
+    const decoder = (fields: Fields<Interface['Character']>): T => {
+      const types: FieldsTypes['Character'] = {
+        /* id */
+        id: () => {
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
+
+          /* Selection */
+          fields.select(leaf('id', args))
+          let mock = null
+
+          /* Decoder */
+          const data = fields.data
+          switch (data.type) {
+            case 'fetching':
+              return mock
+            case 'fetched':
+              return data.response.get('id')(argsHash)
+          }
+        },
+        /* name */
+        name: () => {
+          /* Arguments */
+          const args: Argument[] = []
+          const argsHash = hash(args)
+
+          /* Selection */
+          fields.select(leaf('name', args))
+          let mock = null
+
+          /* Decoder */
+          const data = fields.data
+          switch (data.type) {
+            case 'fetching':
+              return mock
+            case 'fetched':
+              return data.response.get('name')(argsHash)
           }
         },
       }
