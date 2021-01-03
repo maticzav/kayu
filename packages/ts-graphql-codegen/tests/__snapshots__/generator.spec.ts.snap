@@ -11,7 +11,7 @@ exports[`generator generates the API 1`] = `
   Argument,
   hash,
   arg,
-} from '../../ts-graphql/src/__generator'
+} from '../../../ts-graphql/src/__generator'
 
 /* Scalars */
 export type Scalar = {

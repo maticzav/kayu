@@ -17,50 +17,6 @@ output: local_path | node_modules default
 
 Binary by default tries to reach the server. If the server cannot be reached, we use local version of the schema. Save files in `.kayak`.
 
-## Playground
-
-```ts
-const pg_human = objects.human((t) => {
-  let id = t.id()
-  let name = t.name()()
-
-  return { id, name }
-})
-
-const pg = objects.query((t) => {
-  let hello = t.hello()
-  let human = t.human(pg_human)
-  return `${human.name} ${hello}`
-})
-
-let fields = new Fields<Object['Query']>()
-
-pg.decoder(fields)
-
-console.log(JSON.stringify(fields, null, 2))
-
-const data = {
-  hello: 'Hey!',
-  human: {
-    id: 'id',
-    name: 'Matic',
-  },
-}
-
-let fieldsWithData = new Fields<Object['Query']>(data)
-
-let result = pg.decoder(fieldsWithData)
-
-console.log(result)
-
-console.log(
-  serialize({
-    fields: fields.selection,
-    operationType: OperationType.Query,
-  }),
-)
-```
-
 ## Code
 
 ```ts

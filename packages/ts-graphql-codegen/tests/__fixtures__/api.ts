@@ -8,7 +8,7 @@ import {
   Argument,
   hash,
   arg,
-} from '../../ts-graphql/src/__generator'
+} from '../../../ts-graphql/src/__generator'
 
 /* Scalars */
 export type Scalar = {

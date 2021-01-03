@@ -6,7 +6,6 @@
     "module": "commonjs",
     "sourceMap": true,
     "strict": true,
-    "strictNullChecks": true,
     "noFallthroughCasesInSwitch": true,
 
     "incremental": true,
