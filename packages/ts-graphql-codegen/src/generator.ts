@@ -579,22 +579,27 @@ export class GQLGenerator {
   generateEnums(): string[] {
     /**
      * `code` variable represents lines of code while
-     * `index` variable represents index of all enums
-     * we have generated with this function.
+     * `index` variable represents index of all enums we have generated with this function.
+     * `exported` variable represents all enum types that developer may reference.
      */
     let code: string[] = []
     let index: string[] = []
+    let exported: string[] = []
 
     /**
      * Generate objects and make index references
      * as you check each of them.
      */
-    for (const type of this.enums()) {
-      const id = `${type.name}Enum`
-      index.push(`${type.name}: ${id}`)
+    for (const enm of this.enums()) {
+      const id = `${enm.name}Enum`
 
+      // Make a note in export and type index.
+      index.push(`${enm.name}: ${id}`)
+      exported.push(`${enm.name}: ${id},`)
+
+      // Generate an enum.
       code.push(`enum ${id} {`)
-      for (const field of type.enumValues) {
+      for (const field of enm.enumValues) {
         code.push(`${field.name} = "${field.name}",`)
       }
       code.push(`}`, os.EOL)
@@ -603,6 +608,15 @@ export class GQLGenerator {
     /**
      * Generate index using references in index variable.
      */
+    code.push(`export const Enum = {`)
+    code.push(...exported)
+    code.push(`}`)
+    code.push(os.EOL)
+
+    /**
+     * Create a type out of index.
+     */
+
     code.push(`export type Enum = {`)
     code.push(...index)
     code.push(`}`)

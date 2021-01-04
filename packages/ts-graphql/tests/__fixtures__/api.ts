@@ -137,6 +137,11 @@ enum LanguageEnum {
   SL = 'SL',
 }
 
+export const Enum = {
+  Episode: EpisodeEnum,
+  Language: LanguageEnum,
+}
+
 export type Enum = {
   Episode: EpisodeEnum
   Language: LanguageEnum
