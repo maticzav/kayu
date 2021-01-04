@@ -9,70 +9,62 @@ describe('serialization', () => {
     /* Document */
 
     const document = [leaf('fruit')]
-    const expected = ml`
-    | query {
-    |   fruit_1239eb4a8416af46c0448426b51771f5: fruit
-    | }
-    `
 
-    expect(
-      serialize({ operationType: OperationType.Query, fields: document }),
-    ).toEqual(expected)
+    expect(serialize({ operationType: OperationType.Query, fields: document }))
+      .toMatchInlineSnapshot(`
+      "query {
+        fruit_c214d170d7fff31dc574bfb3b1dd3708: fruit
+      }"
+    `)
   })
 
   test('multiple leaves', () => {
     /* Document */
 
     const document = [leaf('fruit'), leaf('chocolate'), leaf('icecream')]
-    const expected = ml`
-    | query {
-    |   fruit_1239eb4a8416af46c0448426b51771f5: fruit
-    |   chocolate_1239eb4a8416af46c0448426b51771f5: chocolate
-    |   icecream_1239eb4a8416af46c0448426b51771f5: icecream
-    | }
-    `
 
-    expect(
-      serialize({ operationType: OperationType.Query, fields: document }),
-    ).toEqual(expected)
+    expect(serialize({ operationType: OperationType.Query, fields: document }))
+      .toMatchInlineSnapshot(`
+      "query {
+        fruit_c214d170d7fff31dc574bfb3b1dd3708: fruit
+        chocolate_6a8fb58342ea086a9725cb14b37188b3: chocolate
+        icecream_6fcc3285e303b05da30860cca1d54c41: icecream
+      }"
+    `)
   })
 
   test('composite', () => {
     /* Document */
 
     const document = [composite('cart', [leaf('apples'), leaf('oranges')])]
-    const expected = ml`
-    | query {
-    |   cart_1239eb4a8416af46c0448426b51771f5: cart {
-    |     __typename
-    |     apples_1239eb4a8416af46c0448426b51771f5: apples
-    |     oranges_1239eb4a8416af46c0448426b51771f5: oranges
-    |   }
-    | }
-    `
 
-    expect(
-      serialize({ operationType: OperationType.Query, fields: document }),
-    ).toEqual(expected)
+    expect(serialize({ operationType: OperationType.Query, fields: document }))
+      .toMatchInlineSnapshot(`
+      "query {
+        cart_f1121066f9af52952dc410428cee3f81: cart {
+          __typename
+          apples_5ca9b46de141a9c8dccc9e54d681b552: apples
+          oranges_f1b333568cdfe686622a262fac2e8221: oranges
+        }
+      }"
+    `)
   })
 
   test('fragment', () => {
     /* Document */
 
     const document = [fragment('Cart', [leaf('apples'), leaf('oranges')])]
-    const expected = ml`
-    | query {
-    |   ... on Cart {
-    |     __typename
-    |     apples_1239eb4a8416af46c0448426b51771f5: apples
-    |     oranges_1239eb4a8416af46c0448426b51771f5: oranges
-    |   }
-    | }
-      `
 
-    expect(
-      serialize({ operationType: OperationType.Query, fields: document }),
-    ).toEqual(expected)
+    expect(serialize({ operationType: OperationType.Query, fields: document }))
+      .toMatchInlineSnapshot(`
+      "query {
+        ... on Cart {
+          __typename
+          apples_5ca9b46de141a9c8dccc9e54d681b552: apples
+          oranges_f1b333568cdfe686622a262fac2e8221: oranges
+        }
+      }"
+    `)
   })
 
   /* Operation name */
@@ -80,11 +72,6 @@ describe('serialization', () => {
     /* Document */
 
     const document = [leaf('fruit')]
-    const expected = ml`
-        | query Query {
-        |   fruit_1239eb4a8416af46c0448426b51771f5: fruit
-        | }
-        `
 
     expect(
       serialize({
@@ -92,7 +79,11 @@ describe('serialization', () => {
         operationType: OperationType.Query,
         fields: document,
       }),
-    ).toEqual(expected)
+    ).toMatchInlineSnapshot(`
+      "query Query {
+        fruit_c214d170d7fff31dc574bfb3b1dd3708: fruit
+      }"
+    `)
   })
 
   /* Arguments */
@@ -107,15 +98,13 @@ describe('serialization', () => {
         [arg('color', 'String!', 'red'), arg('name', 'String')],
       ),
     ]
-    const expected = ml`
-    | query ($bc654bdce94ead15d7dea7b509237d77: String!) {
-    |   fruit_972dff40811115ed68bf327b76b818b4: fruit(color: $bc654bdce94ead15d7dea7b509237d77)
-    | }
-    `
 
-    expect(
-      serialize({ operationType: OperationType.Query, fields: document }),
-    ).toEqual(expected)
+    expect(serialize({ operationType: OperationType.Query, fields: document }))
+      .toMatchInlineSnapshot(`
+      "query ($_d1516317d6fcf60605b4ce18ca2851f5: String!) {
+        fruit_979d4ce64cdde422e45a454e0c833815: fruit(color: $_d1516317d6fcf60605b4ce18ca2851f5)
+      }"
+    `)
   })
 
   test('arguments on composite', () => {
@@ -130,18 +119,16 @@ describe('serialization', () => {
         [arg('color', 'String!', 'red'), arg('name', 'String')],
       ),
     ]
-    const expected = ml`
-    | query ($bc654bdce94ead15d7dea7b509237d77: String!) {
-    |   cart_972dff40811115ed68bf327b76b818b4: cart(color: $bc654bdce94ead15d7dea7b509237d77) {
-    |     __typename
-    |     apples_1239eb4a8416af46c0448426b51771f5: apples
-    |     oranges_1239eb4a8416af46c0448426b51771f5: oranges
-    |   }
-    | }
-    `
 
-    expect(
-      serialize({ operationType: OperationType.Query, fields: document }),
-    ).toEqual(expected)
+    expect(serialize({ operationType: OperationType.Query, fields: document }))
+      .toMatchInlineSnapshot(`
+      "query ($_d1516317d6fcf60605b4ce18ca2851f5: String!) {
+        cart_91c6bc3c9f86854e37b166704fb420fb: cart(color: $_d1516317d6fcf60605b4ce18ca2851f5) {
+          __typename
+          apples_5ca9b46de141a9c8dccc9e54d681b552: apples
+          oranges_f1b333568cdfe686622a262fac2e8221: oranges
+        }
+      }"
+    `)
   })
 })

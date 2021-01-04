@@ -16,6 +16,7 @@ module.exports = {
     '!**/__fixtures__/**',
     '!**/generated/**',
     '!**/dist/**',
+    '!**/server/**',
   ],
   verbose: true,
   coverageDirectory: './coverage',

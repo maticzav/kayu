@@ -14,9 +14,12 @@ import {
 import * as prettier from 'prettier'
 import * as os from 'os'
 
-import { Codec } from '../../ts-graphql/src/codec'
-
-import { getNamedTypeRef, invert } from './ast'
+import {
+  getNamedTypeRef,
+  IntrospectionInvertedInputTypeRef,
+  IntrospectionInvertedTypeRef,
+  invert,
+} from './ast'
 import { wrap, wrapGraphQLSDL } from './refs'
 import { camel, defined, pascal } from './utils'
 
@@ -103,6 +106,8 @@ export class GQLGenerator {
         }
       }
     }
+
+    /* istanbul ignore next */
     return undefined
   }
 
@@ -135,10 +140,7 @@ export class GQLGenerator {
     for (const type of this.schema.types) {
       switch (type.kind) {
         case 'UNION': {
-          // Not built-in type.
-          if (!type.name.startsWith('__')) {
-            unions.push(type)
-          }
+          unions.push(type)
         }
       }
     }
@@ -175,10 +177,7 @@ export class GQLGenerator {
     for (const type of this.schema.types) {
       switch (type.kind) {
         case 'INTERFACE': {
-          // Not built-in type.
-          if (!type.name.startsWith('__')) {
-            interfaces.push(type)
-          }
+          interfaces.push(type)
         }
       }
     }
@@ -195,10 +194,7 @@ export class GQLGenerator {
     for (const type of this.schema.types) {
       switch (type.kind) {
         case 'INPUT_OBJECT': {
-          // Not built-in type.
-          if (!type.name.startsWith('__')) {
-            inputObjects.push(type)
-          }
+          inputObjects.push(type)
         }
       }
     }
@@ -274,7 +270,7 @@ export class GQLGenerator {
    */
   generateImports(core: string): string[] {
     return [
-      `import { composite, leaf, fragment, SelectionSet, Fields, selection, Argument, hash, arg } from '${core}'`,
+      `import { composite, leaf, fragment, arg, Field, Argument, SelectionSet, Fields, selection, nullable, list } from '${core}'`,
     ]
   }
 
@@ -288,11 +284,6 @@ export class GQLGenerator {
     let code: string[] = []
 
     /**
-     * Prepare codecs.
-     */
-    // let codecs: { [key: string]: Codec<any> } = {}
-
-    /**
      * If codecs path is provided, we try to import it and
      * use provided scalars in scalar map definition.
      */
@@ -304,29 +295,6 @@ export class GQLGenerator {
         console.log(`Missing Codecs definitions for custom scalar types.`)
       }
     }
-    // if (codecpath) {
-    //   try {
-    //     // Load package
-    //     const pkg = require(codecpath)
-    //     codecs = pkg.codecs
-
-    //     // Add import
-    //     code.push(`import * as codecs from '${codecpath}'`)
-    //   } catch (err) {
-    //     console.log(err)
-    //     /**
-    //      * Fail if codecpath is invalid.
-    //      */
-    //     throw new Error(
-    //       `You've provided codecs but, ${codecpath} doesn't exist.`,
-    //     )
-    //   }
-    // }
-
-    /**
-     * We keep track of both indexes in two variables that
-     * we later merge into one code.
-     */
 
     /**
      * Firstly, generate index type.
@@ -342,16 +310,6 @@ export class GQLGenerator {
 
     // Custom Scalars
     for (const scalar of this.scalars()) {
-      /**
-       * Throw an error if a declaration is missing.
-       */
-      // if (!codecs.hasOwnProperty(codecName)) {
-      //   throw new Error(
-      //     `Missing codec definition "${codecName}" for ${scalar.name}!`,
-      //   )
-      // }
-      // const codec = codecs[scalar.name]!
-
       code.push(`${scalar.name}: codecs.${scalar.name}Codec`)
     }
 
@@ -385,11 +343,11 @@ export class GQLGenerator {
     code.push('const ScalarDecoder = {')
 
     // Built-In types
-    code.push(`ID: (val) => val,`)
-    code.push(`String: (val) => val,`)
-    code.push(`Float: (val) => val,`)
-    code.push(`Int: (val) => val,`)
-    code.push(`Bool: (val) => val,`)
+    code.push(`ID: (val: string) => val,`)
+    code.push(`String: (val: string) => val,`)
+    code.push(`Float: (val: number) => val,`)
+    code.push(`Int: (val: number) => val,`)
+    code.push(`Bool: (val: boolean) => val,`)
 
     // Custom types.
     for (const scalar of this.scalars()) {
@@ -661,7 +619,7 @@ export class GQLGenerator {
       code.push(`${object.name}: {`)
 
       for (const field of object.fields) {
-        code.push(...this.generateFieldDocumentation(object, field))
+        code.push(...this.generateFieldDocumentation(field))
       }
 
       code.push('}')
@@ -676,7 +634,7 @@ export class GQLGenerator {
        * for possible types.
        */
       for (const field of interfac.fields) {
-        code.push(...this.generateFieldDocumentation(interfac, field))
+        code.push(...this.generateFieldDocumentation(field))
       }
       code.push(...this.generateFragmentDocumentation(interfac.possibleTypes))
 
@@ -707,15 +665,19 @@ export class GQLGenerator {
    *
    * We make sure that we always generate a function, even if it's a thunk.
    */
-  generateFieldDocumentation(
-    type: IntrospectionType,
-    field: IntrospectionField,
-  ): string[] {
+  generateFieldDocumentation(field: IntrospectionField): string[] {
     let chunks: string[] = []
 
     const fieldName = camel(field.name)
     const fieldType = getNamedTypeRef(field.type)
     const fieldRef = field.type
+
+    /**
+     * Documentation generation consists of three phases.
+     * First, we generate arguments if they are present;
+     * secondly, we generate selection if needed;
+     * and thirdly, we generate return type of the function.
+     */
 
     // Arguments
     if (field.args.length > 0) {
@@ -746,11 +708,9 @@ export class GQLGenerator {
          * We defer unwrapping of values to developer land
          * and only make sure that the return type (i.e. typelock) here
          * matches the return value of the field.
-         *
-         * The `true` in wrapper indicates that nullable fields may be ommitted.
          */
         const fieldTypeMapping = this.getTypeMapping(fieldType)
-        const typelock = wrap(fieldTypeMapping, fieldRef, true)
+        const typelock = wrap(fieldTypeMapping, fieldRef)
 
         chunks.push(`<T>(selection: SelectionSet<${typelock}, T>)`)
         break
@@ -763,6 +723,7 @@ export class GQLGenerator {
         }
         break
       /* Throw on unhandled. */
+      /* istanbul ignore next */
       default: {
         throw new Error(`Unhandled case ${fieldType.kind}.`)
       }
@@ -784,6 +745,7 @@ export class GQLGenerator {
 
         break
       /* Throw on unhandled. */
+      /* istanbul ignore next */
       default: {
         throw new Error(`Unhandled case ${fieldType.kind}.`)
       }
@@ -1067,9 +1029,6 @@ export class GQLGenerator {
 
     code.push(`]`)
 
-    // Hash function
-    code.push(`const argsHash = hash(args)`)
-
     /**
      * Thirdly, we generate selection.
      *
@@ -1085,7 +1044,7 @@ export class GQLGenerator {
       case 'INTERFACE':
       case 'OBJECT':
         /* prettier-ignore */
-        code.push(`fields.select(composite('${field.name}', selection.fields, args))`)
+        code.push(`const field = composite('${field.name}', selection.fields, args)`)
         break
 
       /* Value Types */
@@ -1094,14 +1053,17 @@ export class GQLGenerator {
         /**
          * We use mocking function from utility functions to get the mock value.
          */
-        code.push(`fields.select(leaf('${field.name}', args))`)
+        code.push(`const field = leaf('${field.name}', args)`)
 
         break
       /* Throw on unknown. */
+      /* istanbul ignore next */
       default: {
         throw new Error(`Unhandled fieldType ${fieldType.kind}`)
       }
     }
+
+    code.push('fields.select(field)')
 
     /**
      * Lastly, we generate response decoders that will spit the
@@ -1224,24 +1186,22 @@ export class GQLGenerator {
    * We always default to bare minimum to get typesystem working.
    */
   getTypeMock(ref: IntrospectionTypeRef): string {
-    const iref = invert(ref)
+    const type = getNamedTypeRef(ref)
 
-    switch (iref.kind) {
+    switch (type.kind) {
       /* Named */
       case 'ENUM':
-        const id = `${pascal(iref.name)}Enum`
-        return `Object.values(${id})[0]!`
+        const id = `${pascal(type.name)}Enum`
+        return this.getWrappedMockType(`Object.values(${id})[0]!`, ref)
       case 'SCALAR':
-        return `ScalarMock["${iref.name}"]`
+        return this.getWrappedMockType(`ScalarMock["${type.name}"]`, ref)
       /* Selections */
-      case 'NULLABLE':
-      case 'LIST':
       case 'UNION':
       case 'OBJECT':
       case 'INTERFACE':
         return 'selection.mock'
-
       /* Missing */
+      /* istanbul ignore next */
       default: {
         throw new Error(`Unknown reference type mock ${ref.kind}`)
       }
@@ -1249,9 +1209,27 @@ export class GQLGenerator {
   }
 
   /**
+   * A utility function that wraps return value of enums or scalars
+   * into list or nullable values. We use it when generating type mock.
+   */
+  getWrappedMockType(type: string, ref: IntrospectionTypeRef): string {
+    const iref = invert(ref)
+
+    switch (iref.kind) {
+      case 'NULLABLE':
+        return 'null'
+      case 'LIST':
+        return '[]'
+      default:
+        return type
+    }
+  }
+
+  /**
    * Returns the expression that decodes the return value of the query.
    */
   getTypeDecoder(field: IntrospectionField): string {
+    const ref = field.type
     const type = getNamedTypeRef(field.type)
 
     switch (type.kind) {
@@ -1259,17 +1237,48 @@ export class GQLGenerator {
       case 'UNION':
       case 'INTERFACE':
       case 'OBJECT':
-        return `selection.decode(data.response.get('${field.name}')(argsHash))`
+        return `selection.decode(data.response.get('${field.name}')(field.hash!))`
       /* Value Types */
       case 'SCALAR':
-        return `ScalarDecoder.${type.name}(data.response.get("${field.name}")(argsHash))`
+        const scalar = `ScalarDecoder.${type.name}`
+        const decoder = this.getWrappedTypeDecoder(scalar, ref)
+        return `${decoder}(data.response.get("${field.name}")(field.hash!))`
       case 'ENUM':
-        const enumId = `${pascal(type.name)}Enum`
-        return `${enumId}[data.response.get("${field.name}")(argsHash)]!`
+        // Enums are just strings that have a specific type annotation.
+        const identity = `<T>(t: T) => t`
+        const edecoder = this.getWrappedTypeDecoder(identity, ref)
+        return `${edecoder}(data.response.get("${field.name}")(field.hash!))`
       /* Throw on unknown. */
+      /* istanbul ignore next */
       default: {
         throw new Error(`Unhandled field kind ${type.kind} in field decoders.`)
       }
+    }
+  }
+
+  /**
+   * A utility function that wraps return value of enums or scalars
+   * into list or nullable values. We use it when generating type mock.
+   */
+  getWrappedTypeDecoder(type: string, ref: IntrospectionTypeRef): string {
+    return this.getWrappedTypeDecoderI(type, invert(ref))
+  }
+
+  /**
+   * This is a private helper function that processes inverted introspection type.
+   * Use `getWrappedTypeDecoder` instead.
+   */
+  private getWrappedTypeDecoderI(
+    type: string,
+    iref: IntrospectionInvertedTypeRef,
+  ): string {
+    switch (iref.kind) {
+      case 'NULLABLE':
+        return `nullable(${this.getWrappedTypeDecoderI(type, iref.ofType)})`
+      case 'LIST':
+        return `list(${this.getWrappedTypeDecoderI(type, iref.ofType)})`
+      default:
+        return type
     }
   }
 }

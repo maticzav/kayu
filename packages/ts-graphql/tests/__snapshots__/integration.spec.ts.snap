@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`integration tests the API 1`] = `
+Object {
+  "human": Object {
+    "appearsIn": Array [
+      "NEWHOPE",
+      "EMPIRE",
+      "JEDI",
+    ],
+    "id": "1000",
+    "name": "Luke Skywalker",
+  },
+}
+`;

@@ -1,6 +1,19 @@
-import { Argument, hash } from './argument'
+import * as hasher from 'object-hash'
+import { defined, indent } from '../utils'
 
-export type Field =
+import { Argument } from './argument'
+
+// export type Field =
+//   | {
+//       kind: 'composite'
+//       name: string
+//       arguments: Argument[]
+//       selection: Field[]
+//     }
+//   | { kind: 'leaf'; name: string; arguments: Argument[] }
+//   | { kind: 'fragment'; type: string; selection: Field[] }
+
+type InternalField =
   | {
       kind: 'composite'
       name: string
@@ -10,11 +23,129 @@ export type Field =
   | { kind: 'leaf'; name: string; arguments: Argument[] }
   | { kind: 'fragment'; type: string; selection: Field[] }
 
+export class Field {
+  /* State */
+
+  private field: InternalField
+
+  /* Initializer */
+
+  constructor(field: InternalField) {
+    this.field = field
+  }
+
+  /* Accessors */
+
+  /**
+   * Returns an alias of a given field should have an alias,
+   * otherwise it returns undefined.
+   */
+  get alias(): string | undefined {
+    switch (this.field.kind) {
+      case 'leaf':
+      case 'composite': {
+        return `${this.field.name}_${this.hash}`
+      }
+      case 'fragment': {
+        return undefined
+      }
+    }
+  }
+
+  /**
+   * Returns the hash value of a field that we may use to reference the field.
+   * It comes in as a second part of the alias.
+   */
+  get hash(): string | undefined {
+    return hasher.MD5(this.field)
+  }
+
+  get arguments(): Argument[] {
+    switch (this.field.kind) {
+      case 'leaf': {
+        return this.field.arguments
+      }
+      /**
+       * Recursively gets arguments of a subselection and adds them
+       * to arguments of this field.
+       */
+      case 'composite': {
+        return [
+          ...this.field.arguments,
+          ...this.field.selection.flatMap((f) => f.arguments),
+        ]
+      }
+      /**
+       * Recursively gets arguments of a subselection.
+       */
+      case 'fragment': {
+        return this.field.selection.flatMap((f) => f.arguments)
+      }
+    }
+  }
+
+  /* Methods */
+
+  /**
+   * Serializes a field into a GraphQL SDL.
+   */
+  serialize(): string[] {
+    switch (this.field.kind) {
+      /* Leaf */
+      case 'leaf': {
+        /**
+         * We check that a field has an argument and append all of those arguments if
+         * they are specified.
+         */
+        let args: string = ''
+        const argsWithValue = this.field.arguments
+          .filter((arg) => defined(arg.value))
+          .map((arg) => `${arg.name}: $${arg.alias}`)
+
+        if (argsWithValue.length > 0) {
+          args = `(${argsWithValue.join(',')})`
+        }
+
+        return [`${this.alias!}: ${this.field.name}${args}`]
+      }
+      /* Composite */
+      case 'composite': {
+        let args: string = ''
+        const argsWithValue = this.field.arguments
+          .filter((arg) => defined(arg.value))
+          .map((arg) => `${arg.name}: $${arg.alias}`)
+
+        if (argsWithValue.length > 0) {
+          args = `(${argsWithValue.join(',')})`
+        }
+
+        return [
+          `${this.alias!}: ${this.field.name}${args} {`,
+          indent(2)('__typename'),
+          ...this.field.selection.flatMap((f) => f.serialize()).map(indent(2)),
+          `}`,
+        ]
+      }
+      /* Fragment */
+      case 'fragment': {
+        return [
+          `... on ${this.field.type} {`,
+          indent(2)('__typename'),
+          ...this.field.selection.flatMap((f) => f.serialize()).map(indent(2)),
+          `}`,
+        ]
+      }
+    }
+  }
+}
+
+/* Utility functions */
+
 /**
  * Creates a new leaf field.
  */
 export function leaf(name: string, args: Argument[] = []): Field {
-  return { kind: 'leaf', name, arguments: args }
+  return new Field({ kind: 'leaf', name, arguments: args })
 }
 
 /**
@@ -25,55 +156,12 @@ export function composite(
   selection: Field[],
   args: Argument[] = [],
 ): Field {
-  return { kind: 'composite', name, arguments: args, selection }
+  return new Field({ kind: 'composite', name, arguments: args, selection })
 }
 
 /**
  * Creates a new fragment field.
  */
 export function fragment(type: string, selection: Field[]): Field {
-  return { kind: 'fragment', type, selection }
-}
-
-/* Utility functions */
-
-/**
- * Returns an alias of a given field if it has arguments.
- * Otherwise, it returns undefined.
- */
-export function alias(field: Field): string | undefined {
-  switch (field.kind) {
-    case 'leaf':
-    case 'composite': {
-      return `${field.name}_${hash(field.arguments)}`
-    }
-    case 'fragment': {
-      return undefined
-    }
-  }
-}
-
-/**
- * Returns all arguments in fields' tree.
- */
-export function argumentsOfFields(fields: Field[]): Argument[] {
-  return fields.flatMap((field) => {
-    /**
-     * Reuse it for every field.
-     */
-    switch (field.kind) {
-      case 'leaf': {
-        return field.arguments
-      }
-      case 'composite': {
-        return [...field.arguments, ...argumentsOfFields(field.selection)]
-      }
-      /**
-       * Recursively gets arguments of a subselection.
-       */
-      case 'fragment': {
-        return [...argumentsOfFields(field.selection)]
-      }
-    }
-  })
+  return new Field({ kind: 'fragment', type, selection })
 }

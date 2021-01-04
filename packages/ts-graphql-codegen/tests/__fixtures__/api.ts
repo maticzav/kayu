@@ -4,15 +4,18 @@ import {
   composite,
   leaf,
   fragment,
+  arg,
+  Field,
+  Argument,
   SelectionSet,
   Fields,
   selection,
-  Argument,
-  hash,
-  arg,
+  nullable,
+  list,
 } from '../../../ts-graphql/src/__generator'
 
 /* Scalars */
+import * as codecs from 'codecs'
 export type Scalar = {
   ID: string
   String: string
@@ -31,11 +34,11 @@ const ScalarMock = {
   Date: codecs.DateCodec.mock,
 }
 const ScalarDecoder = {
-  ID: (val) => val,
-  String: (val) => val,
-  Float: (val) => val,
-  Int: (val) => val,
-  Bool: (val) => val,
+  ID: (val: string) => val,
+  String: (val: string) => val,
+  Float: (val: number) => val,
+  Int: (val: number) => val,
+  Bool: (val: boolean) => val,
   Date: codecs.DateCodec.decode,
 }
 
@@ -166,22 +169,14 @@ type Documentation = {
   Query: {
     human: (params: {
       id: Scalar['ID']
-    }) => <T>(
-      selection: SelectionSet<Object['Human'] | null | undefined, T>,
-    ) => T
+    }) => <T>(selection: SelectionSet<Object['Human'] | null, T>) => T
     droid: (params: {
       id: Scalar['ID']
-    }) => <T>(
-      selection: SelectionSet<Object['Droid'] | null | undefined, T>,
-    ) => T
+    }) => <T>(selection: SelectionSet<Object['Droid'] | null, T>) => T
     character: (params: {
       id: Scalar['ID']
-    }) => <T>(
-      selection: SelectionSet<Union['CharacterUnion'] | null | undefined, T>,
-    ) => T
-    luke: <T>(
-      selection: SelectionSet<Object['Human'] | null | undefined, T>,
-    ) => T
+    }) => <T>(selection: SelectionSet<Union['CharacterUnion'] | null, T>) => T
+    luke: <T>(selection: SelectionSet<Object['Human'] | null, T>) => T
     humans: <T>(selection: SelectionSet<Array<Object['Human']>, T>) => T
     droids: <T>(selection: SelectionSet<Array<Object['Droid']>, T>) => T
     characters: <T>(
@@ -217,9 +212,9 @@ export const objects = {
         id: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('id', args))
+          const field = leaf('id', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -227,33 +222,16 @@ export const objects = {
             case 'fetching':
               return ScalarMock['ID']
             case 'fetched':
-              return ScalarDecoder.ID(data.response.get('id')(argsHash))
+              return ScalarDecoder.ID(data.response.get('id')(field.hash!))
           }
         },
         /* name */
         name: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('name', args))
-          /* Mock & Decoder */
-
-          const data = fields.data
-          switch (data.type) {
-            case 'fetching':
-              return ScalarMock['String']
-            case 'fetched':
-              return ScalarDecoder.String(data.response.get('name')(argsHash))
-          }
-        },
-        /* primaryFunction */
-        primaryFunction: () => {
-          /* Arguments */
-          const args: Argument[] = []
-          const argsHash = hash(args)
-          /* Selection */
-          fields.select(leaf('primaryFunction', args))
+          const field = leaf('name', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -262,7 +240,26 @@ export const objects = {
               return ScalarMock['String']
             case 'fetched':
               return ScalarDecoder.String(
-                data.response.get('primaryFunction')(argsHash),
+                data.response.get('name')(field.hash!),
+              )
+          }
+        },
+        /* primaryFunction */
+        primaryFunction: () => {
+          /* Arguments */
+          const args: Argument[] = []
+          /* Selection */
+          const field = leaf('primaryFunction', args)
+          fields.select(field)
+          /* Mock & Decoder */
+
+          const data = fields.data
+          switch (data.type) {
+            case 'fetching':
+              return ScalarMock['String']
+            case 'fetched':
+              return ScalarDecoder.String(
+                data.response.get('primaryFunction')(field.hash!),
               )
           }
         },
@@ -270,17 +267,19 @@ export const objects = {
         appearsIn: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('appearsIn', args))
+          const field = leaf('appearsIn', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return selection.mock
+              return []
             case 'fetched':
-              return EpisodeEnum[data.response.get('appearsIn')(argsHash)]!
+              return list(<T>(t: T) => t)(
+                data.response.get('appearsIn')(field.hash!),
+              )
           }
         },
       }
@@ -297,9 +296,9 @@ export const objects = {
         id: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('id', args))
+          const field = leaf('id', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -307,16 +306,16 @@ export const objects = {
             case 'fetching':
               return ScalarMock['ID']
             case 'fetched':
-              return ScalarDecoder.ID(data.response.get('id')(argsHash))
+              return ScalarDecoder.ID(data.response.get('id')(field.hash!))
           }
         },
         /* name */
         name: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('name', args))
+          const field = leaf('name', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -324,25 +323,27 @@ export const objects = {
             case 'fetching':
               return ScalarMock['String']
             case 'fetched':
-              return ScalarDecoder.String(data.response.get('name')(argsHash))
+              return ScalarDecoder.String(
+                data.response.get('name')(field.hash!),
+              )
           }
         },
         /* homePlanet */
         homePlanet: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('homePlanet', args))
+          const field = leaf('homePlanet', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return selection.mock
+              return null
             case 'fetched':
-              return ScalarDecoder.String(
-                data.response.get('homePlanet')(argsHash),
+              return nullable(ScalarDecoder.String)(
+                data.response.get('homePlanet')(field.hash!),
               )
           }
         },
@@ -350,35 +351,37 @@ export const objects = {
         appearsIn: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('appearsIn', args))
+          const field = leaf('appearsIn', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return selection.mock
+              return []
             case 'fetched':
-              return EpisodeEnum[data.response.get('appearsIn')(argsHash)]!
+              return list(<T>(t: T) => t)(
+                data.response.get('appearsIn')(field.hash!),
+              )
           }
         },
         /* infoUrl */
         infoUrl: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('infoURL', args))
+          const field = leaf('infoURL', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
           switch (data.type) {
             case 'fetching':
-              return selection.mock
+              return null
             case 'fetched':
-              return ScalarDecoder.String(
-                data.response.get('infoURL')(argsHash),
+              return nullable(ScalarDecoder.String)(
+                data.response.get('infoURL')(field.hash!),
               )
           }
         },
@@ -396,9 +399,9 @@ export const objects = {
         human: (params) => (selection) => {
           /* Arguments */
           const args: Argument[] = [arg('id', 'ID!', params.id)]
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('human', selection.fields, args))
+          const field = composite('human', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -406,16 +409,16 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('human')(argsHash))
+              return selection.decode(data.response.get('human')(field.hash!))
           }
         },
         /* droid */
         droid: (params) => (selection) => {
           /* Arguments */
           const args: Argument[] = [arg('id', 'ID!', params.id)]
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('droid', selection.fields, args))
+          const field = composite('droid', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -423,16 +426,16 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('droid')(argsHash))
+              return selection.decode(data.response.get('droid')(field.hash!))
           }
         },
         /* character */
         character: (params) => (selection) => {
           /* Arguments */
           const args: Argument[] = [arg('id', 'ID!', params.id)]
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('character', selection.fields, args))
+          const field = composite('character', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -440,16 +443,18 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('character')(argsHash))
+              return selection.decode(
+                data.response.get('character')(field.hash!),
+              )
           }
         },
         /* luke */
         luke: (selection) => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('luke', selection.fields, args))
+          const field = composite('luke', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -457,16 +462,16 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('luke')(argsHash))
+              return selection.decode(data.response.get('luke')(field.hash!))
           }
         },
         /* humans */
         humans: (selection) => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('humans', selection.fields, args))
+          const field = composite('humans', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -474,16 +479,16 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('humans')(argsHash))
+              return selection.decode(data.response.get('humans')(field.hash!))
           }
         },
         /* droids */
         droids: (selection) => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('droids', selection.fields, args))
+          const field = composite('droids', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -491,16 +496,16 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('droids')(argsHash))
+              return selection.decode(data.response.get('droids')(field.hash!))
           }
         },
         /* characters */
         characters: (selection) => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(composite('characters', selection.fields, args))
+          const field = composite('characters', selection.fields, args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -508,16 +513,18 @@ export const objects = {
             case 'fetching':
               return selection.mock
             case 'fetched':
-              return selection.decode(data.response.get('characters')(argsHash))
+              return selection.decode(
+                data.response.get('characters')(field.hash!),
+              )
           }
         },
         /* greeting */
         greeting: (params) => {
           /* Arguments */
           const args: Argument[] = [arg('input', 'Greeting!', params.input)]
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('greeting', args))
+          const field = leaf('greeting', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -526,7 +533,7 @@ export const objects = {
               return ScalarMock['String']
             case 'fetched':
               return ScalarDecoder.String(
-                data.response.get('greeting')(argsHash),
+                data.response.get('greeting')(field.hash!),
               )
           }
         },
@@ -534,9 +541,9 @@ export const objects = {
         whoami: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('whoami', args))
+          const field = leaf('whoami', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -544,7 +551,9 @@ export const objects = {
             case 'fetching':
               return ScalarMock['String']
             case 'fetched':
-              return ScalarDecoder.String(data.response.get('whoami')(argsHash))
+              return ScalarDecoder.String(
+                data.response.get('whoami')(field.hash!),
+              )
           }
         },
       }
@@ -601,9 +610,9 @@ export const interfaces = {
         id: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('id', args))
+          const field = leaf('id', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -611,16 +620,16 @@ export const interfaces = {
             case 'fetching':
               return ScalarMock['ID']
             case 'fetched':
-              return ScalarDecoder.ID(data.response.get('id')(argsHash))
+              return ScalarDecoder.ID(data.response.get('id')(field.hash!))
           }
         },
         /* name */
         name: () => {
           /* Arguments */
           const args: Argument[] = []
-          const argsHash = hash(args)
           /* Selection */
-          fields.select(leaf('name', args))
+          const field = leaf('name', args)
+          fields.select(field)
           /* Mock & Decoder */
 
           const data = fields.data
@@ -628,7 +637,9 @@ export const interfaces = {
             case 'fetching':
               return ScalarMock['String']
             case 'fetched':
-              return ScalarDecoder.String(data.response.get('name')(argsHash))
+              return ScalarDecoder.String(
+                data.response.get('name')(field.hash!),
+              )
           }
         },
         on: <T>(selectors: {

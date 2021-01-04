@@ -1,5 +1,4 @@
-import { hash } from './document/argument'
-import { alias, argumentsOfFields, Field } from './document/field'
+import { Field } from './document/field'
 import { indent, defined } from './utils'
 
 export enum OperationType {
@@ -28,9 +27,10 @@ export function serialize({
    */
   let args: string | undefined = undefined
 
-  const serializedArgs = argumentsOfFields(fields)
+  const serializedArgs = fields
+    .flatMap((f) => f.arguments)
     .filter((arg) => defined(arg.value))
-    .map((arg) => `$${hash([arg])}: ${arg.type}`)
+    .map((arg) => `$${arg.alias}: ${arg.type}`)
 
   if (serializedArgs.length > 0) {
     args = `(${serializedArgs.join(', ')})`
@@ -49,60 +49,8 @@ export function serialize({
    */
   const query: string[] = [
     `${operationDefinition} {`,
-    ...fields.flatMap(serializeField).map(indent(2)),
+    ...fields.flatMap((f) => f.serialize()).map(indent(2)),
     `}`,
   ]
   return query.join('\n')
-}
-
-/**
- * Serializes a single field.
- */
-export function serializeField(field: Field): string[] {
-  switch (field.kind) {
-    /* Leaf */
-    case 'leaf': {
-      /**
-       * We check that a field has an argument and append all of those arguments if
-       * they are specified.
-       */
-      let args: string = ''
-      const argsWithValue = field.arguments
-        .filter((arg) => defined(arg.value))
-        .map((arg) => `${arg.name}: $${hash([arg])}`)
-
-      if (argsWithValue.length > 0) {
-        args = `(${argsWithValue.join(',')})`
-      }
-
-      return [`${alias(field)!}: ${field.name}${args}`]
-    }
-    /* Composite */
-    case 'composite': {
-      let args: string = ''
-      const argsWithValue = field.arguments
-        .filter((arg) => defined(arg.value))
-        .map((arg) => `${arg.name}: $${hash([arg])}`)
-
-      if (argsWithValue.length > 0) {
-        args = `(${argsWithValue.join(',')})`
-      }
-
-      return [
-        `${alias(field)!}: ${field.name}${args} {`,
-        indent(2)('__typename'),
-        ...field.selection.flatMap(serializeField).map(indent(2)),
-        `}`,
-      ]
-    }
-    /* Fragment */
-    case 'fragment': {
-      return [
-        `... on ${field.type} {`,
-        indent(2)('__typename'),
-        ...field.selection.flatMap(serializeField).map(indent(2)),
-        `}`,
-      ]
-    }
-  }
 }

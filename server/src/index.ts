@@ -9,7 +9,7 @@ import { ContextType } from './types/backingTypes'
 
 /* Schema */
 
-const schema = makeSchema({
+export const schema = makeSchema({
   types: allTypes,
   nonNullDefaults: {
     input: true,
@@ -45,7 +45,7 @@ const schema = makeSchema({
 
 /* Server */
 
-const apollo = new ApolloServer({
+export const apollo = new ApolloServer({
   schema,
   debug: true,
   context: ({ req }) => {
@@ -101,13 +101,14 @@ const apollo = new ApolloServer({
 
 /* Start */
 
-/* HTTP */
-const port = parseInt(process.env.PORT || '4000')
+if (require.main === module) {
+  const port = parseInt(process.env.PORT || '4000')
 
-const app = express()
+  const app = express()
 
-apollo.applyMiddleware({ app })
+  apollo.applyMiddleware({ app })
 
-app.listen(port, () => {
-  console.log(`🚀 GraphQL ready at http://localhost:${port}/graphql`)
-})
+  app.listen(port, () => {
+    console.log(`🚀 GraphQL ready at http://localhost:${port}/graphql`)
+  })
+}

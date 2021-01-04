@@ -14,9 +14,12 @@ const prettier = require('../../../prettier.config')
 /* Configuration */
 
 const ENDPOINT = 'http://localhost:4000/graphql'
-const SCHEMA_PATH = path.resolve(__dirname, './__fixtures__/schema.json')
+
 const FIXTURES = path.resolve(__dirname, './__fixtures__')
 const API_PATH = path.resolve(FIXTURES, './api.ts')
+const SCHEMA_PATH = path.resolve(FIXTURES, './schema.json')
+
+const CODECS_PATH = path.resolve(FIXTURES, './codecs')
 const CORE_PATH = path.resolve(__dirname, '../../ts-graphql/src/__generator')
 
 /* Documentation */
@@ -33,8 +36,10 @@ describe('generator', () => {
      * and compare its content with the generated code using snapshots.
      */
     try {
-      schema = await loadSchemaFromURL(ENDPOINT)
-      await writefile(SCHEMA_PATH, JSON.stringify(schema, null, 2))
+      let schemaFromURL = await loadSchemaFromURL(ENDPOINT)
+      await writefile(SCHEMA_PATH, JSON.stringify(schemaFromURL, null, 2))
+
+      schema = await loadSchemaFromPath(SCHEMA_PATH)
     } catch (err) {
       schema = await loadSchemaFromPath(SCHEMA_PATH)
     } finally {
@@ -53,7 +58,7 @@ describe('generator', () => {
      */
     const code = generator.generate({
       core: path.relative(FIXTURES, CORE_PATH),
-      codecs: undefined,
+      codecs: path.relative(FIXTURES, CODECS_PATH),
     })
     await writefile(API_PATH, code)
 

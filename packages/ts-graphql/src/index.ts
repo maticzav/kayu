@@ -1,2 +1,2 @@
-export { HttpHeaders, HttpMethod, send } from './http'
+export { HttpHeaders, send } from './http'
 export { Codec } from './codec'

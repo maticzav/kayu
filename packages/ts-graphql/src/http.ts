@@ -1,9 +1,7 @@
 import { fetch } from 'cross-fetch'
 
 import { OperationType, serialize } from './document'
-import { hash } from './document/argument'
-import { argumentsOfFields } from './document/field'
-import { Fields, SelectionSet } from './selection'
+import { SelectionSet } from './selection'
 import { defined } from './utils'
 
 interface SendInput<TypeLock, Type> {
@@ -17,10 +15,6 @@ interface SendInput<TypeLock, Type> {
    */
   operationName?: string
   /**
-   * HTTP method used to send the request. Defaults to POST>
-   */
-  method?: HttpMethod
-  /**
    * Dictionary of key-value pairs that we should use as headers.
    */
   headers?: HttpHeaders
@@ -29,20 +23,30 @@ interface SendInput<TypeLock, Type> {
 /**
  * Executes a query against the endpoint.
  */
-export async function send<TypeLock, Type>(
+export async function query<TypeLock, Type>(
   opts: SendInput<TypeLock, Type>,
-): Promise<Type> {
+): Promise<[Type] | [null, Error]> {
   return perform({
     operation: OperationType.Query,
     ...opts,
   })
 }
 
-export type HttpHeaders = { [key: string]: string }
-export enum HttpMethod {
-  POST = 'POST',
-  GET = 'GET',
+/**
+ * Run a mutation on the server using selection.
+ */
+export async function mutate<TypeLock, Type>(
+  opts: SendInput<TypeLock, Type>,
+): Promise<[Type] | [null, Error]> {
+  return perform({
+    operation: OperationType.Mutation,
+    ...opts,
+  })
 }
+
+export type HttpHeaders = { [key: string]: string }
+
+/* Internal */
 
 interface PerformInput<TypeLock, Type> {
   endpoint: string
@@ -55,10 +59,6 @@ interface PerformInput<TypeLock, Type> {
    */
   operation: OperationType
   operationName?: string
-  /**
-   * HTTP method used to send the request. Defaults to POST>
-   */
-  method?: HttpMethod
   /**
    * Dictionary of key-value pairs that we should use as headers.
    */
@@ -73,7 +73,7 @@ interface PerformInput<TypeLock, Type> {
  */
 async function perform<TypeLock, Type>(
   opts: PerformInput<TypeLock, Type>,
-): Promise<Type> {
+): Promise<[Type] | [null, Error]> {
   /* Construct a request. */
   const query = serialize({
     fields: opts.selection.fields,
@@ -81,10 +81,17 @@ async function perform<TypeLock, Type>(
     operationName: opts.operationName,
   })
 
+  /**
+   * We get all arguments from the selection and
+   * add identify them using their hashes in the
+   * variables parameter of the object.
+   */
+  const args = opts.selection.fields.flatMap((f) => f.arguments)
+
   let variables: { [hash: string]: any } = {}
-  for (const arg of argumentsOfFields(opts.selection.fields)) {
+  for (const arg of args) {
     if (defined(arg.value)) {
-      variables[hash([arg])] = arg.value
+      variables[arg.alias] = arg.value
     }
   }
 
@@ -93,23 +100,30 @@ async function perform<TypeLock, Type>(
     variables,
   }
 
+  /**
+   * Add operationName parameter if it's present.
+   */
   if (opts.operationName) {
     body['operationName'] = opts.operationName
   }
 
   /* Perform a request. */
-  const res = await fetch(opts.endpoint, {
-    method: opts.method || 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      ...opts.headers,
-      'Content-Type': 'application/json',
-    },
-  }).then((res) => res.json())
 
-  /* Decode the result. */
-  // TODO: not exactly correct...
-  const data = opts.selection.decode(res)
+  try {
+    const res: GraphQLResponse<TypeLock> = await fetch(opts.endpoint, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        ...opts.headers,
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => res.json())
 
-  return data
+    /* Decode the result. */
+    const data = opts.selection.decode(res.data)
+
+    return [data]
+  } catch (err) {
+    return [null, err]
+  }
 }

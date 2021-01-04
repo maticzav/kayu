@@ -12,20 +12,21 @@ export function getNamedTypeRef<T>(
   ref: IntrospectionTypeRef,
 ): IntrospectionNamedTypeRef {
   switch (ref.kind) {
-    case 'LIST': {
+    /* List */
+    case 'LIST':
       return getNamedTypeRef(ref.ofType)
-    }
-    case 'NON_NULL': {
+    /* Non Null */
+    case 'NON_NULL':
       return getNamedTypeRef(ref.ofType)
-    }
+
+    /* Value Types */
     case 'INPUT_OBJECT':
     case 'ENUM':
     case 'UNION':
     case 'OBJECT':
     case 'SCALAR':
-    case 'INTERFACE': {
+    case 'INTERFACE':
       return ref
-    }
   }
 }
 
@@ -84,7 +85,7 @@ export function invert<T>(
    */
   switch (ref.kind) {
     /* Non Nullable */
-    case 'NON_NULL': {
+    case 'NON_NULL':
       const inverted = invert(ref.ofType)
       switch (inverted.kind) {
         case 'NULLABLE': {
@@ -94,9 +95,9 @@ export function invert<T>(
           return inverted
         }
       }
-    }
+
     /* List */
-    case 'LIST': {
+    case 'LIST':
       return {
         kind: 'NULLABLE',
         ofType: {
@@ -104,19 +105,18 @@ export function invert<T>(
           ofType: invert(ref.ofType),
         },
       }
-    }
+
     /* Named */
     case 'ENUM':
     case 'UNION':
     case 'OBJECT':
     case 'SCALAR':
     case 'INPUT_OBJECT':
-    case 'INTERFACE': {
+    case 'INTERFACE':
       return {
         kind: 'NULLABLE',
         ofType: ref,
       }
-    }
   }
 }
 
@@ -135,7 +135,7 @@ export function revert<T>(
    */
   switch (ref.kind) {
     /* Nullable */
-    case 'NULLABLE': {
+    case 'NULLABLE':
       const reverted = revert(ref.ofType)
       switch (reverted.kind) {
         case 'NON_NULL': {
@@ -145,9 +145,8 @@ export function revert<T>(
           return reverted
         }
       }
-    }
     /* List */
-    case 'LIST': {
+    case 'LIST':
       return {
         kind: 'NON_NULL',
         ofType: {
@@ -155,18 +154,16 @@ export function revert<T>(
           ofType: revert(ref.ofType),
         },
       }
-    }
     /* Named */
     case 'ENUM':
     case 'UNION':
     case 'OBJECT':
     case 'SCALAR':
     case 'INPUT_OBJECT':
-    case 'INTERFACE': {
+    case 'INTERFACE':
       return {
         kind: 'NON_NULL',
         ofType: ref,
       }
-    }
   }
 }
