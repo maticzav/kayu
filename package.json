@@ -2,14 +2,16 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "server"
+    "server",
+    "website"
   ],
   "scripts": {
     "build": "yarn workspaces foreach build",
     "test": "jest",
     "g:tsc": "cd $INIT_CWD && tsc",
     "g:tsn": "cd $INIT_CWD && ts-node",
-    "g:tsnd": "cd $INIT_CWD && ts-node-dev"
+    "g:tsnd": "cd $INIT_CWD && ts-node-dev",
+    "g:prettier": "cd $INIT_CWD && prettier"
   },
   "devDependencies": {
     "jest": "^26.6.3",
