@@ -1,3 +1,6 @@
 {
-  "name": "swapi-example"
+  "name": "swapi-example",
+  "dependencies": {
+    "ts-graphql": "workspace:packages/ts-graphql"
+  }
 }

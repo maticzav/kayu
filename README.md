@@ -5,7 +5,7 @@
 - [ ] PostInstall script and configuration loading,
 - [ ] Documentation (best if you copy most of it from Swift GraphQL)
 - [ ] CodeSandbox playground demo
-- [ ] server on Heroku
+- [x] server on Heroku
 - [x] Extend tests with Union, Interface, CustomScalar fetching and similar (best if you copy the demo code in ete tests in SGQL).
 
 - make strict type inferences - use null when appropriate

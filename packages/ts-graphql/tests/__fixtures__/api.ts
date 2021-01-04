@@ -15,11 +15,11 @@ import {
   OperationType,
   SendInput,
   perform,
-} from '../../src/__generator'
+} from 'ts-graphql/__generator'
 
 /* Scalars */
 
-import * as codecs from '/Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql/tests/__fixtures__/codecs'
+import * as codecs from '/Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql/tests/__fixtures__/codecs.ts'
 export type Scalar = {
   ID: string
   String: string

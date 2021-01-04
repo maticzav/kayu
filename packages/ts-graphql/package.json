@@ -1,8 +1,9 @@
 {
   "name": "ts-graphql",
   "version": "0.0.0",
+  "bin": "dist/bin/index.js",
   "scripts": {
-    "postinstall": "echo 'Generate lib'",
+    "postinstall": "node dist/bin/index.js",
     "build": "yarn g:tsc"
   },
   "dependencies": {

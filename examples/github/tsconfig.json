@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist"
-  },
-  "include": ["src"]
+  }
+  // "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  // "exclude": ["node_modules", "tests"]
 }
