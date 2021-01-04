@@ -4,6 +4,5 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "references": [{ "path": "../ts-graphql" }],
   "include": ["tests"]
 }

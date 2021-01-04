@@ -4,17 +4,21 @@ import {
   composite,
   leaf,
   fragment,
-  arg,
   Field,
+  arg,
   Argument,
   SelectionSet,
   Fields,
   selection,
   nullable,
   list,
+  OperationType,
+  SendInput,
+  perform,
 } from '../../src/__generator'
 
 /* Scalars */
+
 import * as codecs from '/Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql/tests/__fixtures__/codecs'
 export type Scalar = {
   ID: string
@@ -43,6 +47,7 @@ const ScalarDecoder = {
 }
 
 /* Types */
+
 type DroidObject = {
   __typename: 'Droid'
   id: Scalar['ID']
@@ -151,7 +156,16 @@ export type InputObject = {
   GreetingOptions: GreetingOptionsInputObject
 }
 
+/* Operations */
+
+export async function send<TypeLock extends { __typename: 'Query' }, Type>(
+  opts: SendInput<TypeLock, Type>,
+): Promise<[Type] | [null, Error]> {
+  return perform({ operation: opts.selection.operation!, ...opts })
+}
+
 /* Documentation */
+
 type Documentation = {
   Droid: {
     id: () => Scalar['ID']
@@ -202,6 +216,7 @@ type Documentation = {
 }
 
 /* Selections */
+
 export const objects = {
   droid: <T>(
     selector: (fields: Documentation['Droid']) => T,
@@ -559,7 +574,7 @@ export const objects = {
       }
       return selector(types)
     }
-    return selection(decoder)
+    return selection(decoder, OperationType.Query)
   },
 }
 

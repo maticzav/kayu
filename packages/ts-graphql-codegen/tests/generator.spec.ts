@@ -3,8 +3,6 @@ import { IntrospectionSchema } from 'graphql'
 import * as path from 'path'
 import { promisify } from 'util'
 
-import { OperationType, serialize } from '../../ts-graphql/src/document'
-
 import { GQLGenerator, loadSchemaFromPath, loadSchemaFromURL } from '../src'
 import { defined } from '../src/utils'
 

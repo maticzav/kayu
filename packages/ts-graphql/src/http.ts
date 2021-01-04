@@ -4,7 +4,7 @@ import { OperationType, serialize } from './document'
 import { SelectionSet } from './selection'
 import { defined } from './utils'
 
-interface SendInput<TypeLock, Type> {
+export interface SendInput<TypeLock, Type> {
   endpoint: string
   /**
    * Selection of fields.
@@ -18,30 +18,6 @@ interface SendInput<TypeLock, Type> {
    * Dictionary of key-value pairs that we should use as headers.
    */
   headers?: HttpHeaders
-}
-
-/**
- * Executes a query against the endpoint.
- */
-export async function query<TypeLock, Type>(
-  opts: SendInput<TypeLock, Type>,
-): Promise<[Type] | [null, Error]> {
-  return perform({
-    operation: OperationType.Query,
-    ...opts,
-  })
-}
-
-/**
- * Run a mutation on the server using selection.
- */
-export async function mutate<TypeLock, Type>(
-  opts: SendInput<TypeLock, Type>,
-): Promise<[Type] | [null, Error]> {
-  return perform({
-    operation: OperationType.Mutation,
-    ...opts,
-  })
 }
 
 export type HttpHeaders = { [key: string]: string }
@@ -71,7 +47,7 @@ interface PerformInput<TypeLock, Type> {
  * NOTE: This function is only used internally as the ground for query and mutation send
  *       functions defined above.
  */
-async function perform<TypeLock, Type>(
+export async function perform<TypeLock, Type>(
   opts: PerformInput<TypeLock, Type>,
 ): Promise<[Type] | [null, Error]> {
   /* Construct a request. */

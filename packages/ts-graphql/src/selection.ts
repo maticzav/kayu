@@ -1,3 +1,4 @@
+import { OperationType } from './document'
 import { Field } from './document/field'
 import { Dict } from './utils'
 
@@ -124,13 +125,19 @@ export class SelectionSet<TypeLock, Type> {
   protected _decoder: (fields: Fields<TypeLock>) => Type
   protected _mock: Type
 
+  private _operation?: OperationType
+
   /* Initializer */
 
-  constructor(decoder: (fields: Fields<TypeLock>) => Type) {
+  constructor(
+    decoder: (fields: Fields<TypeLock>) => Type,
+    operation?: OperationType,
+  ) {
+    /* Make an initial selection and populate fields. */
     this._decoder = decoder
     this._fields = new Fields<TypeLock>()
-    /* Make an initial selection and populate fields. */
     this._mock = decoder(this._fields)
+    this._operation = operation
   }
 
   /* Accessors */
@@ -147,6 +154,14 @@ export class SelectionSet<TypeLock, Type> {
    */
   get mock(): Type {
     return this._mock
+  }
+
+  /**
+   * Returns the operation if this type represents one
+   * of the operations.
+   */
+  get operation(): OperationType | undefined {
+    return this._operation
   }
 
   /* Methods */
@@ -206,6 +221,7 @@ export class SelectionSet<TypeLock, Type> {
  */
 export function selection<TypeLock, Type>(
   decoder: (fields: Fields<TypeLock>) => Type,
+  operation?: OperationType,
 ): SelectionSet<TypeLock, Type> {
-  return new SelectionSet<TypeLock, Type>(decoder)
+  return new SelectionSet<TypeLock, Type>(decoder, operation)
 }

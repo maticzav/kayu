@@ -3,9 +3,6 @@ import { Server } from 'http'
 
 import { apollo } from '../../../server/src'
 
-import { serialize, OperationType } from '../src/document'
-import { send } from '../src'
-
 import * as api from './__fixtures__/api'
 
 /* Config */
@@ -53,7 +50,7 @@ describe('integration', () => {
       return { human }
     })
 
-    const res = await send({
+    const res = await api.send({
       endpoint: url,
       selection: pg,
     })

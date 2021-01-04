@@ -7,19 +7,13 @@ import {
   IntrospectionObjectType,
   IntrospectionScalarType,
   IntrospectionSchema,
-  IntrospectionType,
   IntrospectionTypeRef,
   IntrospectionUnionType,
 } from 'graphql'
 import * as prettier from 'prettier'
 import * as os from 'os'
 
-import {
-  getNamedTypeRef,
-  IntrospectionInvertedInputTypeRef,
-  IntrospectionInvertedTypeRef,
-  invert,
-} from './ast'
+import { getNamedTypeRef, IntrospectionInvertedTypeRef, invert } from './ast'
 import { wrap, wrapGraphQLSDL } from './refs'
 import { camel, defined, pascal } from './utils'
 
@@ -87,6 +81,44 @@ export class GQLGenerator {
     }
 
     return scalars
+  }
+
+  /**
+   * Tells which operation type a particular type is.
+   * If type is not an operation it returns undefined.
+   */
+  operation(name: string): string | undefined {
+    const refs = {
+      [this.schema.queryType.name]: 'Query',
+      [this.schema.mutationType?.name || '__Mutation']: 'Mutation',
+      // [this.schema.subscriptionType?.name || '__Subscription']: 'Subscription',
+    }
+
+    return refs[name]
+  }
+
+  /**
+   * Returns all operations in the schema.
+   */
+  operations(): IntrospectionObjectType[] {
+    let operations: IntrospectionObjectType[] = []
+
+    const refs = [
+      this.schema.queryType,
+      this.schema.mutationType,
+      // this.schema.subscriptionType,
+    ]
+    for (const type of this.schema.types) {
+      switch (type.kind) {
+        case 'OBJECT': {
+          if (refs.some((ref) => ref?.name === type.name)) {
+            operations.push(type)
+          }
+        }
+      }
+    }
+
+    return operations
   }
 
   /**
@@ -218,9 +250,11 @@ export class GQLGenerator {
       /* Type Index */
       os.EOL,
       '/* Scalars */',
+      os.EOL,
       ...this.generateScalars(opts.codecs),
       os.EOL,
       '/* Types */',
+      os.EOL,
       ...this.generateObjectTypes(),
       os.EOL,
       ...this.generateInterfaceTypes(),
@@ -230,13 +264,17 @@ export class GQLGenerator {
       ...this.generateEnums(),
       os.EOL,
       ...this.generateInputObjects(),
-      /* Documentation */
+      os.EOL,
+      '/* Operations */',
+      os.EOL,
+      ...this.generateOperations(),
       os.EOL,
       '/* Documentation */',
+      os.EOL,
       ...this.generateDocumentation(),
-      /* Selections */
       os.EOL,
       '/* Selections */',
+      os.EOL,
       ...this.generateObjects(),
       os.EOL,
       ...this.generateUnions(),
@@ -269,9 +307,29 @@ export class GQLGenerator {
    * @param core - relative path to the core library that we use in generated code.
    */
   generateImports(core: string): string[] {
-    return [
-      `import { composite, leaf, fragment, arg, Field, Argument, SelectionSet, Fields, selection, nullable, list } from '${core}'`,
+    const items = [
+      // Field
+      'composite',
+      'leaf',
+      'fragment',
+      'Field',
+      // Argument
+      'arg',
+      'Argument',
+      // Selection
+      'SelectionSet',
+      'Fields',
+      'selection',
+      // Decoders
+      'nullable',
+      'list',
+      // Http
+      'OperationType',
+      'SendInput',
+      'perform',
     ]
+
+    return [`import { ${items.join(', ')} } from '${core}'`]
   }
 
   /**
@@ -599,6 +657,38 @@ export class GQLGenerator {
     return code
   }
 
+  /* Operations */
+
+  /**
+   * Generates operations that developers may use to perform queries.
+   */
+  generateOperations(): string[] {
+    let code: string[] = []
+
+    /**
+     * Calculate the typelock using operation types.
+     */
+    let operations: string[] = []
+
+    for (const operation of this.operations()) {
+      operations.push(operation.name)
+    }
+
+    const typelock = operations.map((op) => `| { __typename: '${op}' }`)
+
+    /**
+     * Generate send function that user may use to perform queries and mutations.
+     */
+
+    /* prettier-ignore */
+    code.push(`export async function send<TypeLock extends ${typelock}, Type>(opts: SendInput<TypeLock, Type>): Promise<[Type] | [null, Error]> {`)
+    /* prettier-ignore */
+    code.push(`return perform({ operation: opts.selection.operation!, ...opts })`)
+    code.push(`}`)
+
+    return code
+  }
+
   /* Documentation */
 
   /**
@@ -836,7 +926,14 @@ export class GQLGenerator {
       code.push('}')
       /* Ends decoder */
 
-      code.push('return selection(decoder)')
+      // Figure out operation type and attach it if present.
+      const operation = this.operation(object.name)
+      if (operation) {
+        code.push(`return selection(decoder, OperationType.${operation})`)
+      } else {
+        code.push('return selection(decoder)')
+      }
+
       code.push('},')
       /* Ends selector */
     }
