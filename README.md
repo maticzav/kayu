@@ -1,5 +1,13 @@
 # ts-graphql
 
+## TODOs:
+
+- [ ] PostInstall script and configuration loading,
+- [ ] Documentation (best if you copy most of it from Swift GraphQL)
+- [ ] CodeSandbox playground demo
+- [ ] server on Heroku
+- [ ] Extend tests with Union, Interface, CustomScalar fetching and similar (best if you copy the demo code in ete tests in SGQL).
+
 - make strict type inferences - use null when appropriate
 - object is the same as structure in Swift - roughly
 - have auto running postscript + cli utility to fetch schema and save it
