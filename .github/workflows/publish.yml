@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Publish Library
+    name: Publish Libraries
     runs-on: ubuntu-latest
     steps:
       # Setup
