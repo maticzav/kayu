@@ -1,10 +1,15 @@
 {
   "name": "ts-graphql",
   "version": "0.0.0",
+  "main": "dist/index.js",
   "bin": "dist/bin/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "yarn g:tsc",
-    "prepack": "yarn g:tsc",
+    "build": "yarn g:tsc --build && echo 'done build ts-graphql'",
+    "prepack": "yarn build",
+    "prepublishOnly": "yarn build",
     "postinstall": "node dist/bin/index.js"
   },
   "dependencies": {

@@ -4,8 +4,5 @@
     "rootDir": "./src",
     "outDir": "./dist"
   },
-  "references": [
-    { "path": "../ts-graphql-codegen" },
-    { "path": "../../server" }
-  ]
+  "references": [{ "path": "../ts-graphql-codegen" }]
 }

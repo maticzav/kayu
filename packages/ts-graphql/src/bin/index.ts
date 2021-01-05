@@ -80,8 +80,9 @@ export async function generate(root: string) {
    */
 
   const ENDPOINT = config.endpoint
-  const CORE_PATH = 'ts-graphql/__generator'
+  const CORE_PATH = 'ts-graphql'
   const API_PATH = path.resolve(root, config.api)
+  const API_DIR = path.dirname(API_PATH)
   const SCHEMA_PATH = path.resolve(root, config.schema)
 
   // Optional args
@@ -98,7 +99,14 @@ export async function generate(root: string) {
     }
   }
   if (config.codecs) {
-    CODECS_PATH = path.resolve(root, config.codecs)
+    /**
+     * We calculate codecs path relative to the output directory.
+     * This way, code stays the same when ran on a CI.
+     */
+    const absoluteCodecsPath = path.resolve(root, config.codecs)
+    const relativeCodecsPath = path.relative(API_DIR, absoluteCodecsPath)
+
+    CODECS_PATH = `./${relativeCodecsPath}`
   }
 
   /**
@@ -125,7 +133,7 @@ export async function generate(root: string) {
    * Save the code and perform tests as described above.
    */
   const code = generator.generate({
-    core: CORE_PATH.replace(/\.ts$/, ''),
+    core: CORE_PATH,
     codecs: CODECS_PATH?.replace(/\.ts$/, ''),
   })
   await writefile(API_PATH, code)
@@ -139,7 +147,9 @@ async function main() {
   /**
    * We calculate endpoint relative to configuration file.
    */
-  const root = await pkg(process.cwd())
+  const cwd = process.env.INIT_CWD || process.cwd()
+
+  const root = await pkg(cwd)
 
   /* istanbul ignore if */
   if (root === null) {

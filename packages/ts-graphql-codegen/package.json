@@ -6,8 +6,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "yarn g:tsc",
-    "prepack": "yarn g:tsc"
+    "build": "yarn g:tsc --build && echo 'done build ts-graphql-codegen'",
+    "prepack": "yarn build",
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "camelcase": "^6.2.0",

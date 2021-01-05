@@ -22,7 +22,7 @@ const FIXTURES = path.resolve(__dirname, '../tests/__fixtures__')
 const SCHEMA_PATH = path.resolve(FIXTURES, './schema.json')
 const API_PATH = path.resolve(FIXTURES, './api.ts')
 
-const CORE_PATH = path.resolve(__dirname, '../src/__generator')
+const CORE_PATH = path.resolve(__dirname, '../src/')
 const CODECS_PATH = path.resolve(FIXTURES, './codecs')
 
 export default async () => {

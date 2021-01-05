@@ -17,8 +17,8 @@ const FIXTURES = path.resolve(__dirname, './__fixtures__')
 const API_PATH = path.resolve(FIXTURES, './api.ts')
 const SCHEMA_PATH = path.resolve(FIXTURES, './schema.json')
 
-const CODECS_PATH = path.resolve(FIXTURES, './codecs')
-const CORE_PATH = path.resolve(__dirname, '../../ts-graphql/src/__generator')
+const CODECS_PATH = `./${path.resolve(FIXTURES, './codecs')}`
+const CORE_PATH = path.resolve(__dirname, '../../ts-graphql/src/')
 
 /* Documentation */
 

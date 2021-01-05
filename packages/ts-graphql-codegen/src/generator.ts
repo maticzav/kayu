@@ -304,7 +304,7 @@ export class GQLGenerator {
   /**
    * Generates imports that library needs.
    *
-   * @param core - relative path to the core library that we use in generated code.
+   * @param core - relative path to the core library root.
    */
   generateImports(core: string): string[] {
     const items = [
@@ -336,7 +336,7 @@ export class GQLGenerator {
    * Generates index of scalar types the generated code uses and
    * a collection of mock values indexed by scalar names.
    *
-   * @param codecpath - absolute path to a given TypeScript file.
+   * @param codecpath - path to a given TypeScript file containing codecs.
    */
   generateScalars(codecpath?: string): string[] {
     let code: string[] = []
