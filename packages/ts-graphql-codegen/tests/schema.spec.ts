@@ -38,8 +38,6 @@ describe('schema', () => {
     const sdl = path.resolve(FIXTURES, './schema.graphql')
     const schema = await loadSchemaFromSDL(sdl)
 
-    console.log({ schema })
-
     expect(schema).toMatchSnapshot()
   })
 

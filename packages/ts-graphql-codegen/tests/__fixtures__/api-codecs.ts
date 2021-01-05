@@ -19,7 +19,7 @@ import {
 
 /* Scalars */
 
-import * as codecs from '../../../../Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql-codegen/tests/__fixtures__/codecs'
+import * as codecs from './codecs'
 export type Scalar = {
   ID: string
   String: string
@@ -42,7 +42,7 @@ const ScalarDecoder = {
   String: (val: string) => val,
   Float: (val: number) => val,
   Int: (val: number) => val,
-  Bool: (val: boolean) => val,
+  Boolean: (val: boolean) => val,
   Date: codecs.DateCodec.decode,
 }
 

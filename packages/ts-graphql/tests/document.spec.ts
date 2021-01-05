@@ -41,7 +41,7 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query {
-        cart_f1121066f9af52952dc410428cee3f81: cart {
+        cart_89bd3b5044c865e19465162e8f210c16: cart {
           __typename
           apples_5ca9b46de141a9c8dccc9e54d681b552: apples
           oranges_f1b333568cdfe686622a262fac2e8221: oranges
@@ -102,7 +102,7 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query ($_d1516317d6fcf60605b4ce18ca2851f5: String!) {
-        fruit_979d4ce64cdde422e45a454e0c833815: fruit(color: $_d1516317d6fcf60605b4ce18ca2851f5)
+        fruit_a20bc241bd19a81dbd9f6ecf3300a7b3: fruit(color: $_d1516317d6fcf60605b4ce18ca2851f5)
       }"
     `)
   })
@@ -123,7 +123,7 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query ($_d1516317d6fcf60605b4ce18ca2851f5: String!) {
-        cart_91c6bc3c9f86854e37b166704fb420fb: cart(color: $_d1516317d6fcf60605b4ce18ca2851f5) {
+        cart_586c2b8a4dd6510d3e342956983b0f27: cart(color: $_d1516317d6fcf60605b4ce18ca2851f5) {
           __typename
           apples_5ca9b46de141a9c8dccc9e54d681b552: apples
           oranges_f1b333568cdfe686622a262fac2e8221: oranges

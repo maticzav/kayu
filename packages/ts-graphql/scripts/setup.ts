@@ -31,8 +31,8 @@ export default async () => {
    * Save the code and perform tests as described above.
    */
   const code = generator.generate({
-    core: path.relative(FIXTURES, CORE_PATH),
-    codecs: CODECS_PATH,
+    core: `./${path.relative(FIXTURES, CORE_PATH)}`,
+    codecs: `./${path.relative(FIXTURES, CODECS_PATH)}`,
   })
   await writefile(API_PATH, code)
 

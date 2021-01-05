@@ -24,8 +24,8 @@ const readdir = promisify(fs.readdir)
 const DEFAULT_CONFIG = (root: string) => `
 module.exports = {
   endpoint: "http://localhost:3000",
-  schema: "${root}/schema.json",
-  api: "${root}/api.ts",
+  schema: "./schema.json",
+  api: "./api.ts",
   // prettier: undefined
 }
 `

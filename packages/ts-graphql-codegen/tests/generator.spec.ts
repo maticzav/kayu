@@ -16,7 +16,7 @@ const ENDPOINT = 'http://localhost:4000/graphql'
 const FIXTURES = path.resolve(__dirname, './__fixtures__')
 const SCHEMA_PATH = path.resolve(FIXTURES, './schema.json')
 
-const CODECS_PATH = `./${path.resolve(FIXTURES, './codecs')}`
+const CODECS_PATH = path.resolve(FIXTURES, './codecs')
 const CORE_PATH = path.resolve(__dirname, '../../ts-graphql/src/')
 
 /* Documentation */
@@ -39,7 +39,7 @@ describe('generator', () => {
      */
     const code = generator.generate({
       core: path.relative(FIXTURES, CORE_PATH),
-      codecs: path.relative(FIXTURES, CODECS_PATH),
+      codecs: `./${path.relative(FIXTURES, CODECS_PATH)}`,
     })
     await writefile(path.resolve(FIXTURES, './api-codecs.ts'), code)
 

@@ -42,7 +42,7 @@ const ScalarDecoder = {
   String: (val: string) => val,
   Float: (val: number) => val,
   Int: (val: number) => val,
-  Bool: (val: boolean) => val,
+  Boolean: (val: boolean) => val,
   Date: codecs.DateCodec.decode,
 }
 

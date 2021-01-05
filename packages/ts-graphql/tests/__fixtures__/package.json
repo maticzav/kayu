@@ -1,3 +1,4 @@
 {
-  "name": "integration-test"
+  "name": "integration-test",
+  "private": true
 }
