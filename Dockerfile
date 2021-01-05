@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 
 # Install Dependencies
 COPY . .
-RUN yarn
+RUN yarn install --skip-builds
 
 # Build Server
 RUN yarn workspace server build
