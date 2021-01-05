@@ -12,7 +12,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '13.x'
-      - run: yarn install
+      # Build
+      - run: yarn install --skip-builds
+      - run: yarn build
+      - run: yarn rebuild
       # Test
       - run: yarn test
       - run: yarn test:examples

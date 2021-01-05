@@ -10,3 +10,5 @@ coverage
 .yarn/build-state.yml 
 
 tsconfig.tsbuildinfo
+
+/ts-graphql.config.js

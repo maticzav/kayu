@@ -8,6 +8,9 @@
   ],
   "scripts": {
     "build": "node scripts/build.js",
+    "clean": "yarn clean:node_modules; yarn clean:dist",
+    "clean:node_modules": "rimraf node_modules ./**/node_modules",
+    "clean:dist": "rimraf ./**/dist ./**/tsconfig.tsbuildinfo",
     "test": "jest",
     "test:examples": "node scripts/examples.js",
     "ts-graphql": "ts-node --prefer-ts-exts packages/ts-graphql/src/bin/index.ts",
