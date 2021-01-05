@@ -12,8 +12,8 @@ module.exports = {
     navbar: {
       title: 'Kayu',
       logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        alt: 'Kayu',
+        src: 'img/logo.png',
       },
       items: [
         {
@@ -31,7 +31,7 @@ module.exports = {
       ],
     },
     footer: {
-      style: 'dark',
+      style: 'light',
       links: [
         {
           title: 'Docs',

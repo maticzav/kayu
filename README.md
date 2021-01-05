@@ -1,4 +1,4 @@
-<div align="center"><img src="media/thumbnail.png" width="460" /></div>
+<div align="center"><img src="media/thumbnail.png" width="320" /></div>
 
 # kayu
 
