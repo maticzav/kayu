@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "bin": "dist/bin/index.js",
   "scripts": {
-    "postinstall": "node dist/bin/index.js",
-    "build": "yarn g:tsc"
+    "build": "yarn g:tsc",
+    "prepack": "yarn g:tsc",
+    "postinstall": "node dist/bin/index.js"
   },
   "dependencies": {
     "cross-fetch": "^3.0.6",

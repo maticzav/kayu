@@ -19,7 +19,7 @@ import {
 
 /* Scalars */
 
-import * as codecs from '/Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql/tests/__fixtures__/codecs.ts'
+import * as codecs from '/Users/maticzavadlal/Code/mine/typescript-graphql/packages/ts-graphql/tests/__fixtures__/codecs'
 export type Scalar = {
   ID: string
   String: string

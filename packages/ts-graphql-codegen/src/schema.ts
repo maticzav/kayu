@@ -68,8 +68,8 @@ export async function loadSchemaFromPath(
   }
 
   /* Laod the data. */
-  const data = await readfile(filepath)
-  const schema: IntrospectionSchema = JSON.parse(data.toString())
+  const data = await readfile(filepath, { encoding: 'utf-8' })
+  const schema: IntrospectionSchema = JSON.parse(data)
 
   return schema
 }
