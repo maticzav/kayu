@@ -1,4 +1,6 @@
-# ts-graphql
+<div align="center"><img src="media/thumbnail.png" width="860" /></div>
+
+# kayu
 
 ## TODOs:
 
@@ -14,6 +16,8 @@
 
 When you install it, we try to guess the root directory and create configuration file if it doesn't exist yet.
 If it does exist, we should generate the library every time user installs it.
+
+https://swapi-ql.herokuapp.com/graphql
 
 ## Configuration
 

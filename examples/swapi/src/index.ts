@@ -20,7 +20,7 @@ async function main() {
    * We send a query to the endpoint.
    */
   const [res] = await send({
-    endpoint: '',
+    endpoint: 'https://swapi-ql.herokuapp.com/graphql',
     selection: query,
   })
 
