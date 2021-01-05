@@ -55,9 +55,28 @@ export class Field {
   /**
    * Returns the hash value of a field that we may use to reference the field.
    * It comes in as a second part of the alias.
+   *
+   * We calculate field hash using only pure objects to prevent hashes to differ
+   * in different executions.
    */
   get hash(): string | undefined {
-    return hasher.MD5(this.field)
+    switch (this.field.kind) {
+      case 'composite': {
+        return hasher.MD5({
+          name: this.field.name,
+          arguments: this.field.arguments.map((arg) => arg.toJSON()),
+        })
+      }
+      case 'fragment': {
+        return undefined
+      }
+      case 'leaf': {
+        return hasher.MD5({
+          name: this.field.name,
+          arguments: this.field.arguments.map((arg) => arg.toJSON()),
+        })
+      }
+    }
   }
 
   get arguments(): Argument[] {

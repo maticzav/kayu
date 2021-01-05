@@ -13,7 +13,7 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query {
-        fruit_c214d170d7fff31dc574bfb3b1dd3708: fruit
+        fruit_eb37e7ab6887e55aeb7f98d695100103: fruit
       }"
     `)
   })
@@ -26,9 +26,9 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query {
-        fruit_c214d170d7fff31dc574bfb3b1dd3708: fruit
-        chocolate_6a8fb58342ea086a9725cb14b37188b3: chocolate
-        icecream_6fcc3285e303b05da30860cca1d54c41: icecream
+        fruit_eb37e7ab6887e55aeb7f98d695100103: fruit
+        chocolate_3300c1bdd6a08dadf2af76dc6d516569: chocolate
+        icecream_9b912fdc4321963d056e662b3c117fbf: icecream
       }"
     `)
   })
@@ -41,10 +41,10 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query {
-        cart_89bd3b5044c865e19465162e8f210c16: cart {
+        cart_416de9e4af9665f3320aa9c40f58366a: cart {
           __typename
-          apples_5ca9b46de141a9c8dccc9e54d681b552: apples
-          oranges_f1b333568cdfe686622a262fac2e8221: oranges
+          apples_8f1252cf10c1a604dfd555bb7a5c0e64: apples
+          oranges_f16340c1fecde79ece24e1aa36a837ba: oranges
         }
       }"
     `)
@@ -60,8 +60,8 @@ describe('serialization', () => {
       "query {
         ... on Cart {
           __typename
-          apples_5ca9b46de141a9c8dccc9e54d681b552: apples
-          oranges_f1b333568cdfe686622a262fac2e8221: oranges
+          apples_8f1252cf10c1a604dfd555bb7a5c0e64: apples
+          oranges_f16340c1fecde79ece24e1aa36a837ba: oranges
         }
       }"
     `)
@@ -81,7 +81,7 @@ describe('serialization', () => {
       }),
     ).toMatchInlineSnapshot(`
       "query Query {
-        fruit_c214d170d7fff31dc574bfb3b1dd3708: fruit
+        fruit_eb37e7ab6887e55aeb7f98d695100103: fruit
       }"
     `)
   })
@@ -102,7 +102,7 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query ($_d1516317d6fcf60605b4ce18ca2851f5: String!) {
-        fruit_a20bc241bd19a81dbd9f6ecf3300a7b3: fruit(color: $_d1516317d6fcf60605b4ce18ca2851f5)
+        fruit_2489b25c35405165a5e714afb49c1007: fruit(color: $_d1516317d6fcf60605b4ce18ca2851f5)
       }"
     `)
   })
@@ -123,10 +123,10 @@ describe('serialization', () => {
     expect(serialize({ operationType: OperationType.Query, fields: document }))
       .toMatchInlineSnapshot(`
       "query ($_d1516317d6fcf60605b4ce18ca2851f5: String!) {
-        cart_586c2b8a4dd6510d3e342956983b0f27: cart(color: $_d1516317d6fcf60605b4ce18ca2851f5) {
+        cart_225b4c586e6a13e4a81b15f31567bc65: cart(color: $_d1516317d6fcf60605b4ce18ca2851f5) {
           __typename
-          apples_5ca9b46de141a9c8dccc9e54d681b552: apples
-          oranges_f1b333568cdfe686622a262fac2e8221: oranges
+          apples_8f1252cf10c1a604dfd555bb7a5c0e64: apples
+          oranges_f16340c1fecde79ece24e1aa36a837ba: oranges
         }
       }"
     `)

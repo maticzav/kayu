@@ -48,7 +48,14 @@ export class Argument {
    * We use alias to reference arguemnts globally in the query.
    */
   get alias(): string {
-    return `_${hasher.MD5(this.arg)}`
+    return `_${this.hash}`
+  }
+
+  /**
+   * Calculates the hash of the argument.
+   */
+  get hash(): string {
+    return hasher.MD5(this.arg)
   }
 
   /* Methods */

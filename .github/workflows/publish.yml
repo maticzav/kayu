@@ -1,0 +1,27 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Publish Library
+    runs-on: ubuntu-latest
+    steps:
+      # Setup
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      # Install & Test
+      - run: yarn install --skip-builds
+      - run: yarn test
+      - run: yarn build
+      # Publish
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          git config --global github.token $GH_TOKEN
+          git config --global user.email $GH_EMAIL
+          git config --global user.name $GH_USER
+      - run: yarn lerna publish --yes
