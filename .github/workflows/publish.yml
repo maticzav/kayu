@@ -15,10 +15,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '13.x'
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '13.x'
       # Build
       - run: yarn install --skip-builds
       - run: yarn build
