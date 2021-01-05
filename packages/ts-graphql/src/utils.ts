@@ -1,3 +1,5 @@
+import { URL } from 'url'
+
 /**
  * Creates an indenting function.
  */
@@ -17,3 +19,15 @@ export function defined<T>(val: T | undefined): val is T {
  * Represents a dictionary type.
  */
 export type Dict<T = any> = { [key: string]: T }
+
+/**
+ * Tells whether a string is an url.
+ */
+export function isURL(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch (err) {
+    return false
+  }
+}

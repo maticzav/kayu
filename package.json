@@ -9,8 +9,9 @@
   "scripts": {
     "build": "node scripts/build.js",
     "test": "jest",
-    "ts-graphql": "ts-node packages/ts-graphql/src/bin/index.ts",
-    "g:ts-graphql": "ts-node packages/ts-graphql/src/bin/index.ts",
+    "test:examples": "node scripts/examples.js",
+    "ts-graphql": "ts-node --prefer-ts-exts packages/ts-graphql/src/bin/index.ts",
+    "g:ts-graphql": "ts-node --prefer-ts-exts packages/ts-graphql/src/bin/index.ts",
     "g:tsc": "cd $INIT_CWD && tsc",
     "g:tsn": "cd $INIT_CWD && ts-node",
     "g:tsnd": "cd $INIT_CWD && ts-node-dev",

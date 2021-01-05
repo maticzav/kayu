@@ -19,7 +19,9 @@
   },
   "devDependencies": {
     "@graphql-tools/schema": "^7.1.2",
+    "@types/express": "^4.17.9",
     "@types/node-fetch": "^2",
-    "@types/prettier": "^2.1.6"
+    "@types/prettier": "^2.1.6",
+    "express": "^4.17.1"
   }
 }

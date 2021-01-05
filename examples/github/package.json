@@ -1,3 +1,9 @@
 {
-  "name": "github-example"
+  "name": "github-example",
+  "scripts": {
+    "build": "yarn g:tsc"
+  },
+  "dependencies": {
+    "ts-graphql": "workspace:packages/ts-graphql"
+  }
 }

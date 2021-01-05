@@ -3,13 +3,7 @@ import { IntrospectionSchema } from 'graphql'
 import * as path from 'path'
 import { promisify } from 'util'
 
-import {
-  GQLGenerator,
-  loadSchemaFromPath,
-  loadSchemaFromURL,
-} from 'ts-graphql-codegen/src'
-
-import { defined } from '../src/utils'
+import { GQLGenerator, loadSchemaFromPath } from 'ts-graphql-codegen/src'
 
 const writefile = promisify(fs.writeFile)
 const prettier = require('../../../prettier.config')
@@ -26,23 +20,7 @@ const CORE_PATH = path.resolve(__dirname, '../src/')
 const CODECS_PATH = path.resolve(FIXTURES, './codecs')
 
 export default async () => {
-  let schema: IntrospectionSchema | undefined = undefined
-
-  /**
-   * We load the schema from the server if server is available,
-   * otherwise we use the cached result from fixtures.
-   *
-   * We save the generated code into a fixtures file for examination
-   * and compare its content with the generated code using snapshots.
-   */
-  try {
-    schema = await loadSchemaFromURL(ENDPOINT)
-    await writefile(SCHEMA_PATH, JSON.stringify(schema, null, 2))
-  } catch (err) {
-    schema = await loadSchemaFromPath(SCHEMA_PATH)
-  } finally {
-    if (!defined(schema)) throw new Error(`Couldn't load schema.`)
-  }
+  let schema: IntrospectionSchema = await loadSchemaFromPath(SCHEMA_PATH)
 
   /**
    * Construct the generator.

@@ -350,7 +350,7 @@ export class GQLGenerator {
       code.push(`import * as codecs from '${codecpath}'`)
     } else {
       if (this.scalars().length > 0) {
-        console.log(`Missing Codecs definitions for custom scalar types.`)
+        console.warn(`No codec definitions for custom scalar types.`)
       }
     }
 
@@ -368,7 +368,11 @@ export class GQLGenerator {
 
     // Custom Scalars
     for (const scalar of this.scalars()) {
-      code.push(`${scalar.name}: codecs.${scalar.name}Codec`)
+      if (codecpath) {
+        code.push(`${scalar.name}: codecs.${scalar.name}Codec`)
+      } else {
+        code.push(`${scalar.name}: any`)
+      }
     }
 
     /* End */
@@ -388,7 +392,11 @@ export class GQLGenerator {
 
     // Custom types.
     for (const scalar of this.scalars()) {
-      code.push(`${scalar.name}: codecs.${scalar.name}Codec.mock,`)
+      if (codecpath) {
+        code.push(`${scalar.name}: codecs.${scalar.name}Codec.mock,`)
+      } else {
+        code.push(`${scalar.name}: "any" as any,`)
+      }
     }
 
     /* End */
@@ -405,11 +413,15 @@ export class GQLGenerator {
     code.push(`String: (val: string) => val,`)
     code.push(`Float: (val: number) => val,`)
     code.push(`Int: (val: number) => val,`)
-    code.push(`Bool: (val: boolean) => val,`)
+    code.push(`Boolean: (val: boolean) => val,`)
 
     // Custom types.
     for (const scalar of this.scalars()) {
-      code.push(`${scalar.name}: codecs.${scalar.name}Codec.decode,`)
+      if (codecpath) {
+        code.push(`${scalar.name}: codecs.${scalar.name}Codec.decode,`)
+      } else {
+        code.push(`${scalar.name}: (val: any) => val,`)
+      }
     }
 
     /* End */
@@ -688,7 +700,9 @@ export class GQLGenerator {
       operations.push(operation.name)
     }
 
-    const typelock = operations.map((op) => `| { __typename: '${op}' }`)
+    const typelock = operations
+      .map((op) => `{ __typename: '${op}' }`)
+      .join(' | ')
 
     /**
      * Generate send function that user may use to perform queries and mutations.
@@ -793,10 +807,11 @@ export class GQLGenerator {
          * that references the generated code. We use the reference
          * to produce correct (wrapped) type value.
          */
+        const argName = camel(arg.name)
         const argType = this.getTypeMapping(getNamedTypeRef(arg.type))
         const argRef = arg.type
 
-        args.push(`${arg.name}: ${wrap(argType, argRef)}`)
+        args.push(`${argName}: ${wrap(argType, argRef)}`)
       }
 
       chunks.push(`(params: { ${args.join(', ')} })`)
@@ -1135,7 +1150,7 @@ export class GQLGenerator {
       const argTypeName = getNamedTypeRef(arg.type).name
       const argType = wrapGraphQLSDL(argTypeName, argRef)
 
-      code.push(`arg("${arg.name}", "${argType}", params.${argName})`)
+      code.push(`arg("${arg.name}", "${argType}", params.${argName}),`)
     }
 
     code.push(`]`)
@@ -1356,7 +1371,7 @@ export class GQLGenerator {
         return `${decoder}(data.response.get("${field.name}")(field.hash!))`
       case 'ENUM':
         // Enums are just strings that have a specific type annotation.
-        const identity = `<T>(t: T) => t`
+        const identity = `(<T>(t: T) => t)`
         const edecoder = this.getWrappedTypeDecoder(identity, ref)
         return `${edecoder}(data.response.get("${field.name}")(field.hash!))`
       /* Throw on unknown. */

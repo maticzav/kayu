@@ -2,7 +2,7 @@
 
 ## TODOs:
 
-- [ ] PostInstall script and configuration loading,
+- [x] PostInstall script and configuration loading,
 - [ ] Documentation (best if you copy most of it from Swift GraphQL)
 - [ ] CodeSandbox playground demo
 - [x] server on Heroku

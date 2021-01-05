@@ -4,5 +4,6 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests"],
+  "references": [{ "path": "../../server" }]
 }

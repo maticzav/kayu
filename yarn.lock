@@ -7890,6 +7890,8 @@ fsevents@~2.1.2:
 "github-example@workspace:examples/github":
   version: 0.0.0-use.local
   resolution: "github-example@workspace:examples/github"
+  dependencies:
+    ts-graphql: "workspace:packages/ts-graphql"
   languageName: unknown
   linkType: soft
 
@@ -16040,9 +16042,11 @@ fsevents@~2.1.2:
   resolution: "ts-graphql-codegen@workspace:packages/ts-graphql-codegen"
   dependencies:
     "@graphql-tools/schema": ^7.1.2
+    "@types/express": ^4.17.9
     "@types/node-fetch": ^2
     "@types/prettier": ^2.1.6
     camelcase: ^6.2.0
+    express: ^4.17.1
     graphql: ^15.4.0
     multilines: ^1.0.3
     node-fetch: ^2.6.1

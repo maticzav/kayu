@@ -25,4 +25,18 @@ describe('bin', () => {
 
     expect(code).toMatchSnapshot()
   })
+
+  test('generates API using URL', async () => {
+    await generate(path.resolve(FIXTURES, './url'))
+
+    const code = await readfile(API_PATH, { encoding: 'utf-8' })
+    expect(code).toMatchSnapshot()
+  })
+
+  test('generates API using SDL', async () => {
+    await generate(path.resolve(FIXTURES, './sdl'))
+
+    const code = await readfile(API_PATH, { encoding: 'utf-8' })
+    expect(code).toMatchSnapshot()
+  })
 })

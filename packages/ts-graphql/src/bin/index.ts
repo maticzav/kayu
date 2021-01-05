@@ -10,6 +10,10 @@ import {
 } from 'ts-graphql-codegen'
 import { promisify } from 'util'
 
+import { loadSchemaFromSDL } from 'ts-graphql-codegen'
+
+import { isURL } from '../utils'
+
 /* Utils */
 
 const writefile = promisify(fs.writeFile)
@@ -110,18 +114,30 @@ export async function generate(root: string) {
   }
 
   /**
-   * We load the schema from the server if server is available,
+   * We load the schema from the server if url is an address
+   * and server is available or SDL file if given file is an SDL,
    * otherwise we use the cached result.
    */
   let schema: IntrospectionSchema | undefined = undefined
 
   try {
-    schema = await loadSchemaFromURL(ENDPOINT)
-    await writefile(SCHEMA_PATH, JSON.stringify(schema, null, 2))
+    // SDL load
+    if (ENDPOINT.endsWith('.graphql') || ENDPOINT.endsWith('.gql')) {
+      const sdlPath = path.resolve(root, config.endpoint)
+      schema = await loadSchemaFromSDL(sdlPath)
+    }
+    // URL load
+    if (isURL(ENDPOINT)) {
+      schema = await loadSchemaFromURL(ENDPOINT)
+    }
   } catch (err) {
     schema = await loadSchemaFromPath(SCHEMA_PATH)
   } finally {
-    if (schema === undefined) throw new Error(`Couldn't load schema.`)
+    if (schema === undefined) {
+      console.error(`Couldn't load schema from ${ENDPOINT}.`)
+      process.exit(1)
+    }
+    await writefile(SCHEMA_PATH, JSON.stringify(schema, null, 2))
   }
 
   /**

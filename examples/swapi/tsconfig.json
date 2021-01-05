@@ -3,6 +3,6 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist"
-  }
-  // "references": [{ "path": "../../packages/ts-graphql" }]
+  },
+  "references": [{ "path": "../../packages/ts-graphql" }]
 }

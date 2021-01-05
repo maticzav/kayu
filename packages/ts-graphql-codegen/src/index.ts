@@ -3,4 +3,5 @@ export {
   loadSchemaFromPath,
   LoadSchemaFromOptions,
   loadSchemaFromURL,
+  loadSchemaFromSDL,
 } from './schema'
