@@ -1,6 +1,7 @@
 {
   "name": "server",
   "version": "0.0.0",
+  "private": true,
   "scripts": {
     "start": "yarn g:tsnd --respawn ./src",
     "build": "yarn g:tsc"
