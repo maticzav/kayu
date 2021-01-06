@@ -23,5 +23,8 @@
     "@types/prettier": "^2.1.6",
     "express": "^4.17.1"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT"
 }
