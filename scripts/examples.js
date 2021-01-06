@@ -19,20 +19,36 @@ const examples = fs
   .filter((f) => fs.lstatSync(path.resolve(f)).isDirectory())
   .filter((p) => fs.existsSync(path.resolve(p, 'tsconfig.json')))
 
-/* Build */
-
-const builds = [...examples]
-
 // ----------- //
 /* Static part */
 // ----------- //
 
+/* Regenerate */
+
 console.log(`
-${chalk.reset.inverse.bold.cyan(' BUILDING ')}
-${builds.map((build) => `- ${build}`).join('\n')}
+${chalk.reset.inverse.bold.cyan(' REGENERATING ')}
+${examples.map((build) => `- ${build}`).join('\n')}
 `)
 
-const args = ['-b', ...builds, ...process.argv.slice(2)]
+for (const example of examples) {
+  try {
+    execa.sync('yarn', ['g:kayu'], { cwd: example, stdio: 'inherit' })
+    console.log(`Done ${example}...`)
+  } catch (e) {
+    console.error(`Unable to regenerate ${example}`)
+    console.error(e.stack)
+    process.exitCode = 1
+  }
+}
+
+/* Build */
+
+console.log(`
+${chalk.reset.inverse.bold.cyan(' BUILDING ')}
+${examples.map((build) => `- ${build}`).join('\n')}
+`)
+
+const args = ['-b', ...examples, ...process.argv.slice(2)]
 
 console.log(chalk.inverse('Building TypeScript definition files\n'))
 

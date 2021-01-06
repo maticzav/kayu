@@ -22,8 +22,5 @@ jobs:
       # Tests
       - run: yarn test
       # Publish
-      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          git config --global github.token $GH_TOKEN
-          git config --global user.email $GH_EMAIL
-          git config --global user.name $GH_USER
-      - run: yarn lerna publish --yes
+      - run: yarn changeset version
+      - run: yarn changeset publish
