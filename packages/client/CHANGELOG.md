@@ -1,6 +1,15 @@
 # @kayu/client
 
+## 0.1.1
+
+### Patch Changes
+
+- a6681bf: Testing out build phase with Yarn Workspaces
+- Updated dependencies [a6681bf]
+  - @kayu/codegen@0.1.1
+
 ## 0.1.0
+
 ### Minor Changes
 
 - 60a55e2: Publish first beta version of the app. Expect the 0.x.y versions not to follow semantic versioning until we reach 1.0.0
