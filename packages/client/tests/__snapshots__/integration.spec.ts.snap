@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`integration tests the API 1`] = `
+Array [
+  Object {
+    "chars": Array [
+      Object {
+        "id": "1000",
+        "name": "Luke Skywalker",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1001",
+        "name": "Darth Vader",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1002",
+        "name": "Han Solo",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1003",
+        "name": "Leia Organa",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1004",
+        "name": "Wilhuff Tarkin",
+        "note": "Plays NEWHOPE.",
+      },
+      Object {
+        "id": "2000",
+        "name": "C-3PO",
+        "note": "My primary function is Protocol.",
+      },
+      Object {
+        "id": "2001",
+        "name": "R2-D2",
+        "note": "My primary function is Astromech.",
+      },
+    ],
+    "greeting": "Hello Matic",
+    "humans": Array [
+      Object {
+        "id": "1000",
+        "name": "Luke Skywalker",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1001",
+        "name": "Darth Vader",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1002",
+        "name": "Han Solo",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1003",
+        "name": "Leia Organa",
+        "note": "Plays NEWHOPE,EMPIRE,JEDI.",
+      },
+      Object {
+        "id": "1004",
+        "name": "Wilhuff Tarkin",
+        "note": "Plays NEWHOPE.",
+      },
+    ],
+  },
+]
+`;

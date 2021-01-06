@@ -11,4 +11,4 @@ coverage
 
 tsconfig.tsbuildinfo
 
-/ts-graphql.config.js
+/kayu.config.js

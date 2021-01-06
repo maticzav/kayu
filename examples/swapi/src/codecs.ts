@@ -1,9 +1,9 @@
-import { Codec } from 'ts-graphql'
+import { Codec } from '@kayu/client'
 
 /**
  * We are using a custom codec type - Date - in our schema.
  * Since Date is not a built-in scalar, we need to help
- * ts-graphql decode it if we want to access it.
+ * Kayu decode it if we want to access it.
  */
 
 export const DateCodec: Codec<Date> = {

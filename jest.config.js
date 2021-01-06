@@ -22,7 +22,7 @@ module.exports = {
   coverageDirectory: './coverage',
   coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
   // Setup
-  globalSetup: './packages/ts-graphql/scripts/setup.ts',
+  globalSetup: './packages/client/scripts/setup.ts',
   // globals: {
   //   'ts-jest': {
   //     tsconfig: 'tsconfig.test.json',

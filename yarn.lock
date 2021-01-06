@@ -2376,6 +2376,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kayu/client@workspace:packages/client":
+  version: 0.0.0-use.local
+  resolution: "@kayu/client@workspace:packages/client"
+  dependencies:
+    "@kayu/codegen": "workspace:packages/codegen"
+    "@types/express": ^4.17.9
+    "@types/object-hash": ^1.3.4
+    cross-fetch: ^3.0.6
+    express: ^4.17.1
+    graphql: ^15.4.0
+    multilines: ^1.0.3
+    object-hash: ^2.1.1
+  bin:
+    kayu: dist/bin/index.js
+  languageName: unknown
+  linkType: soft
+
+"@kayu/codegen@workspace:packages/codegen":
+  version: 0.0.0-use.local
+  resolution: "@kayu/codegen@workspace:packages/codegen"
+  dependencies:
+    "@graphql-tools/schema": ^7.1.2
+    "@types/express": ^4.17.9
+    "@types/node-fetch": ^2
+    "@types/prettier": ^2.1.6
+    camelcase: ^6.2.0
+    express: ^4.17.1
+    graphql: ^15.4.0
+    multilines: ^1.0.3
+    node-fetch: ^2.6.1
+    prettier: ^2.2.1
+  languageName: unknown
+  linkType: soft
+
 "@lerna/add@npm:3.21.0":
   version: 3.21.0
   resolution: "@lerna/add@npm:3.21.0"
@@ -9555,7 +9589,7 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "github-example@workspace:examples/github"
   dependencies:
-    ts-graphql: "workspace:packages/ts-graphql"
+    "@kayu/client": "workspace:packages/client"
   languageName: unknown
   linkType: soft
 
@@ -18422,7 +18456,7 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "swapi-example@workspace:examples/swapi"
   dependencies:
-    ts-graphql: "workspace:packages/ts-graphql"
+    "@kayu/client": "workspace:packages/client"
   languageName: unknown
   linkType: soft
 
@@ -18895,40 +18929,6 @@ fsevents@~2.1.2:
   checksum: 0d0fa95e8a3b518d5dc51442cf9dc185ebbc534173c4bf74c3fd4e118489b6a2f00765040c893d37dcabbe5dd401ddf5729cdba9857a50e2aabc614f42702341
   languageName: node
   linkType: hard
-
-"ts-graphql-codegen@workspace:packages/ts-graphql-codegen":
-  version: 0.0.0-use.local
-  resolution: "ts-graphql-codegen@workspace:packages/ts-graphql-codegen"
-  dependencies:
-    "@graphql-tools/schema": ^7.1.2
-    "@types/express": ^4.17.9
-    "@types/node-fetch": ^2
-    "@types/prettier": ^2.1.6
-    camelcase: ^6.2.0
-    express: ^4.17.1
-    graphql: ^15.4.0
-    multilines: ^1.0.3
-    node-fetch: ^2.6.1
-    prettier: ^2.2.1
-  languageName: unknown
-  linkType: soft
-
-"ts-graphql@workspace:packages/ts-graphql":
-  version: 0.0.0-use.local
-  resolution: "ts-graphql@workspace:packages/ts-graphql"
-  dependencies:
-    "@types/express": ^4.17.9
-    "@types/object-hash": ^1.3.4
-    cross-fetch: ^3.0.6
-    express: ^4.17.1
-    graphql: ^15.4.0
-    multilines: ^1.0.3
-    object-hash: ^2.1.1
-    ts-graphql-codegen: "workspace:packages/ts-graphql-codegen"
-  bin:
-    ts-graphql: dist/bin/index.js
-  languageName: unknown
-  linkType: soft
 
 "ts-invariant@npm:^0.4.0":
   version: 0.4.4

@@ -3,7 +3,7 @@
   "version": "independent",
   "npmClient": "yarn",
   "command": {
-    "publish": {
+    "version": {
       "ignoreChanges": ["ignored-file", "*.md"],
       "conventionalCommits": true
     }

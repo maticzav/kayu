@@ -5,6 +5,6 @@
     "build": "yarn g:tsc"
   },
   "dependencies": {
-    "ts-graphql": "workspace:packages/ts-graphql"
+    "@kayu/client": "workspace:packages/client"
   }
 }

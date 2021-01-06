@@ -2,6 +2,6 @@
   "name": "swapi-example",
   "private": true,
   "dependencies": {
-    "ts-graphql": "workspace:packages/ts-graphql"
+    "@kayu/client": "workspace:packages/client"
   }
 }
