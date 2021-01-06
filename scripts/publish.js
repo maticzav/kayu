@@ -31,12 +31,14 @@ for (const package of packages) {
   console.log(` - ${package}`)
 
   try {
-    // First, create .npmrc file.
-    const npmrcPath = path.resolve(package, './.npmrc')
-    const npmrc = `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}`
+    // Yarn intentionally ignores .npmrc files. https://github.com/yarnpkg/berry/issues/1537
 
-    fs.writeFileSync(npmrcPath, npmrc)
-    console.log(`Created .npmrc in ${npmrcPath}...`)
+    // First, create .npmrc file.
+    // const npmrcPath = path.resolve(package, './.npmrc')
+    // const npmrc = `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}`
+
+    // fs.writeFileSync(npmrcPath, npmrc)
+    // console.log(`Created .npmrc in ${npmrcPath}...`)
 
     // Publish using Yarn NPM publish.
     execa.sync(
