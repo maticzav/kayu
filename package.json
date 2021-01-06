@@ -14,6 +14,7 @@
     "clean:dist": "rimraf ./**/dist ./**/tsconfig.tsbuildinfo",
     "test": "jest",
     "test:examples": "node scripts/examples.js",
+    "release": "changeset version && node scripts/publish.js",
     "kayu": "ts-node --prefer-ts-exts packages/client/src/bin/index.ts",
     "g:kayu": "ts-node --prefer-ts-exts packages/client/src/bin/index.ts",
     "g:tsc": "cd $INIT_CWD && tsc",
