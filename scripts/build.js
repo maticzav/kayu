@@ -14,14 +14,11 @@ const packages = fs
   .readdirSync(PACKAGES_DIR)
   .map((file) => path.resolve(PACKAGES_DIR, file))
   .filter((f) => fs.lstatSync(path.resolve(f)).isDirectory())
-
-const packagesWithTs = packages.filter((p) =>
-  fs.existsSync(path.resolve(p, 'tsconfig.json')),
-)
+  .filter((p) => fs.existsSync(path.resolve(p, 'tsconfig.json')))
 
 /* Build */
 
-const builds = [...packagesWithTs]
+const builds = [...packages]
 
 // ----------- //
 /* Static part */

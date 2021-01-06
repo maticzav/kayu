@@ -4,6 +4,12 @@ const path = require('path')
 const chalk = require('chalk')
 const execa = require('execa')
 
+/* Publish checks */
+
+if (!process.env.NPM_TOKEN) {
+  throw new Error(`No NPM_TOKEN!`)
+}
+
 /* Constants */
 
 const PACKAGES_DIR = path.resolve(__dirname, '../packages')
@@ -25,6 +31,14 @@ for (const package of packages) {
   console.log(` - ${package}`)
 
   try {
+    // First, create .npmrc file.
+    const npmrcPath = path.resolve(package, './.npmrc')
+    const npmrc = `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}`
+
+    fs.writeFileSync(npmrcPath, npmrc)
+    console.log(`Created .npmrc in ${npmrcPath}...`)
+
+    // Publish using Yarn NPM publish.
     execa.sync(
       'yarn',
       ['npm', 'publish', '--tolerate-republish', ...process.argv.slice(2)],

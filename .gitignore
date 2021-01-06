@@ -3,6 +3,7 @@ node_modules
 dist
 coverage
 package.tgz
+.npmrc
 
 *.log
 
