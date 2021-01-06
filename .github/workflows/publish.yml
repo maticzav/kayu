@@ -22,8 +22,11 @@ jobs:
       # Tests
       - run: yarn test
       # Publish
-      - run: yarn changeset version
-      - run: yarn changeset publish
+      - name: Release
+        uses: changesets/action@master
+        with:
+          publish: yarn changeset publish
+          version: yarn changeset version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
