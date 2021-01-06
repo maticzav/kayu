@@ -2510,11 +2510,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kayu/client@workspace:packages/client":
+"@kayu/client@workspace:*, @kayu/client@workspace:packages/client":
   version: 0.0.0-use.local
   resolution: "@kayu/client@workspace:packages/client"
   dependencies:
-    "@kayu/codegen": "workspace:packages/codegen"
+    "@kayu/codegen": "workspace:*"
     "@types/express": ^4.17.9
     "@types/object-hash": ^1.3.4
     cross-fetch: ^3.0.6
@@ -2527,7 +2527,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kayu/codegen@workspace:packages/codegen":
+"@kayu/codegen@workspace:*, @kayu/codegen@workspace:packages/codegen":
   version: 0.0.0-use.local
   resolution: "@kayu/codegen@workspace:packages/codegen"
   dependencies:
@@ -8448,7 +8448,7 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "github-example@workspace:examples/github"
   dependencies:
-    "@kayu/client": "workspace:packages/client"
+    "@kayu/client": "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -16586,7 +16586,7 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "swapi-example@workspace:examples/swapi"
   dependencies:
-    "@kayu/client": "workspace:packages/client"
+    "@kayu/client": "workspace:*"
   languageName: unknown
   linkType: soft
 

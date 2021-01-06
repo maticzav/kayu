@@ -14,7 +14,7 @@
     "postinstall": "node dist/bin/index.js"
   },
   "dependencies": {
-    "@kayu/codegen": "workspace:packages/codegen",
+    "@kayu/codegen": "workspace:*",
     "cross-fetch": "^3.0.6",
     "object-hash": "^2.1.1"
   },
@@ -24,5 +24,6 @@
     "express": "^4.17.1",
     "graphql": "^15.4.0",
     "multilines": "^1.0.3"
-  }
+  },
+  "license": "MIT"
 }

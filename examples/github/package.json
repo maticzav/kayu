@@ -5,6 +5,6 @@
     "build": "yarn g:tsc"
   },
   "dependencies": {
-    "@kayu/client": "workspace:packages/client"
+    "@kayu/client": "workspace:*"
   }
 }
