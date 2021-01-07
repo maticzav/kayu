@@ -1,22 +1,106 @@
 import React from 'react'
-import clsx from 'clsx'
 import Layout from '@theme/Layout'
 import Link from '@docusaurus/Link'
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import useBaseUrl from '@docusaurus/useBaseUrl'
 
 import styles from './styles.module.css'
+import { Feature } from '../components/feature'
+
+/* Page */
+
+/**
+ * Home page is a landing page that user gets to to
+ */
+export default function Home() {
+  /* Constants */
+
+  const thumbnailURL = useBaseUrl('./img/thumbnail.svg')
+
+  /* Page */
+
+  return (
+    <Layout
+      title={`KayuJS`}
+      description="GraphQL client that lets you forget about GraphQL."
+    >
+      {/* Header */}
+      <header>
+        <div className="container">
+          {/* Title */}
+          <img
+            className={styles.featureImage}
+            src={thumbnailURL}
+            alt={'KayuJS'}
+          />
+          <p className="hero__subtitle">
+            GraphQL client that lets you forget about GraphQL
+          </p>
+
+          {/* Call to Action
+          <div className={styles.buttons}>
+            <Link
+              // className={clsx(
+              //   'button button--outline button--white button--lg',
+              //   styles.getStarted,
+              // )}
+              to={useBaseUrl('docs/')}
+            >
+              Get Started
+            </Link>
+          </div> */}
+        </div>
+        {/*  */}
+      </header>
+
+      {/* Main */}
+      <main>
+        {features && features.length > 0 && (
+          <section className={styles.features}>
+            <div className="container">
+              <div className="row">
+                {features.map((props, idx) => (
+                  <Feature key={idx} {...props} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* Sandbox */}
+      <iframe
+        src="https://codesandbox.io/embed/starwars-01zdl?fontsize=14&hidenavigation=1&theme=dark&view=editor"
+        style={{
+          width: '100%',
+          maxWidth: '700px',
+          height: '400px',
+          maxHeight: '50%',
+          border: 0,
+          borderRadius: '4px',
+          overflow: 'hidden',
+          margin: 'auto',
+          display: 'block',
+        }}
+        title="StarWars"
+        allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+        sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+      ></iframe>
+
+      {/*  */}
+    </Layout>
+  )
+}
 
 /* Content */
 
 const features = [
   {
-    title: 'Easy to Use',
+    title: 'TypeSafe',
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Kayu was designed ground up to be end-to-end type-safe. If your project
+        compiles, we guarantee that queries are valid.
       </>
     ),
   },
@@ -31,77 +115,8 @@ const features = [
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Lightweight',
     imageUrl: 'img/undraw_docusaurus_react.svg',
-    description: (
-      <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
-      </>
-    ),
+    description: <></>,
   },
 ]
-
-/* Components */
-
-function Feature({ imageUrl, title, description }) {
-  const imgUrl = useBaseUrl(imageUrl)
-  return (
-    <div className={clsx('col col--4', styles.feature)}>
-      {imgUrl && (
-        <div className="text--center">
-          <img className={styles.featureImage} src={imgUrl} alt={title} />
-        </div>
-      )}
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </div>
-  )
-}
-
-/* Page */
-
-/**
- * Home page is a landing page that user gets to to
- */
-export default function Home() {
-  const context = useDocusaurusContext()
-  const { siteConfig = {} } = context
-  return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
-    >
-      <header className={clsx('hero hero--primary', styles.heroBanner)}>
-        <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
-          <div className={styles.buttons}>
-            <Link
-              className={clsx(
-                'button button--outline button--white button--lg',
-                styles.getStarted,
-              )}
-              to={useBaseUrl('docs/')}
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </header>
-      <main>
-        {features && features.length > 0 && (
-          <section className={styles.features}>
-            <div className="container">
-              <div className="row">
-                {features.map((props, idx) => (
-                  <Feature key={idx} {...props} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-      </main>
-    </Layout>
-  )
-}

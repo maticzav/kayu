@@ -280,6 +280,8 @@ export class GQLGenerator {
       ...this.generateUnions(),
       os.EOL,
       ...this.generateInterfaces(),
+      os.EOL,
+      ...this.generateExports(),
     ].join(os.EOL)
 
     /* Formats the code. */
@@ -1008,7 +1010,7 @@ export class GQLGenerator {
       for (const field of interfac.fields) {
         code.push(...this.generateField(field))
       }
-      code.push(...this.generateFragments(interfac.possibleTypes))
+      code.push(...this.generateFragment(interfac.possibleTypes))
 
       code.push('}')
       /* Ends types */
@@ -1060,7 +1062,7 @@ export class GQLGenerator {
        * Union types only have `on` function and we add it here as
        * a fragment selection.
        */
-      code.push(...this.generateFragments(union.possibleTypes))
+      code.push(...this.generateFragment(union.possibleTypes))
 
       code.push('}')
       /* Ends types */
@@ -1221,7 +1223,7 @@ export class GQLGenerator {
    * types. It generates fragment selections that developer may access
    * using `on` function.
    */
-  generateFragments(
+  generateFragment(
     objects: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[],
   ): string[] {
     let code: string[] = []
@@ -1280,6 +1282,18 @@ export class GQLGenerator {
     code.push('},')
 
     return code
+  }
+
+  /**
+   * Generates utility export functions that make the code easier
+   * to write and read.
+   */
+  generateExports(): string[] {
+    return [
+      'export const o = objects',
+      'export const u = unions',
+      'export const i = interfaces',
+    ]
   }
 
   /* Utility functions */

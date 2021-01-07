@@ -9,40 +9,42 @@ module.exports = {
   organizationName: 'maticzav', // Usually your GitHub org/user name.
   projectName: 'kayu', // Usually your repo name.
   themeConfig: {
+    // Navifation
     navbar: {
-      title: 'Kayu',
+      title: 'KayuJS',
       logo: {
-        alt: 'Kayu',
+        alt: 'KayuJS',
         src: 'img/logo.png',
       },
       items: [
         {
           to: 'docs/',
           activeBasePath: 'docs',
-          label: 'Docs',
+          label: 'Documentation',
           position: 'left',
         },
         { to: 'blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/maticzav/kayu',
           label: 'GitHub',
-          position: 'right',
+          position: 'left',
         },
       ],
     },
+    // Footer
     footer: {
       style: 'light',
       links: [
         {
-          title: 'Docs',
+          title: 'Follow KayuJS',
           items: [
             {
-              label: 'Style Guide',
-              to: 'docs/',
+              label: 'GitHub',
+              to: 'https://github.com/maticzav',
             },
             {
-              label: 'Second Doc',
-              to: 'docs/doc2/',
+              label: 'Twitter',
+              to: 'https://twitter.com/maticzav',
             },
           ],
         },
@@ -56,11 +58,11 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/maticzav/kayu/edit/main/website/docs',
+          editUrl: 'https://github.com/maticzav/kayu/edit/main/website/',
         },
         blog: {
           showReadingTime: true,
-          editUrl: 'https://github.com/maticzav/kayu/edit/main/website/blog/',
+          editUrl: 'https://github.com/maticzav/kayu/edit/main/website/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
