@@ -691,3 +691,7 @@ export const interfaces = {
     return selection(decoder)
   },
 }
+
+export const o = objects
+export const u = unions
+export const i = interfaces
