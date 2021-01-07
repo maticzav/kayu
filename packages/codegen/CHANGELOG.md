@@ -1,5 +1,11 @@
 # @kayu/codegen
 
+## 0.1.2
+
+### Patch Changes
+
+- f6ae2b8: Adds utility exports for interfaces, objects and unions.
+
 ## 0.1.1
 
 ### Patch Changes
