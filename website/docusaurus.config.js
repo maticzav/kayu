@@ -18,12 +18,17 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/',
+          to: '/docs/',
           activeBasePath: 'docs',
           label: 'Documentation',
           position: 'left',
         },
-        { to: 'blog', label: 'Blog', position: 'left' },
+        { to: '/blog/', label: 'Blog', position: 'left' },
+        {
+          href: 'https://github.com/maticzav/kayu/discussions',
+          label: 'Forum',
+          position: 'left',
+        },
         {
           href: 'https://github.com/maticzav/kayu',
           label: 'GitHub',
