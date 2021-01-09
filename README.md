@@ -17,6 +17,8 @@
 - 🏖 **Time Saving:** Save time when debugging - it guarantees that every query is valid.
 - 🏔 **High Level:** You don't have to worry about naming collisions, variables, _anything_. Just TypeScript.
 
+> :construction: This is a work in progress. Read more [here](https://github.com/maticzav/kayu/projects/1).
+
 ## Overview
 
 Kayu is a TypeScript code generator and a lightweight client. It lets you create queries using TypeScirpt, and guarantees that every query you create is valid.
