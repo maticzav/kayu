@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "build": "yarn g:tsc --build && echo 'done building codegen'",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "postinstall": "node dist/bin/index.js"
   },
   "dependencies": {
     "camelcase": "^6.2.0",

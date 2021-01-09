@@ -2,6 +2,7 @@
   "name": "swapi-example",
   "private": true,
   "dependencies": {
-    "@kayu/client": "workspace:*"
+    "@kayu/client": "workspace:*",
+    "@kayu/codegen": "workspace:*"
   }
 }

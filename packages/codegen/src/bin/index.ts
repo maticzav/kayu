@@ -5,13 +5,12 @@ import { IntrospectionSchema } from 'graphql'
 import * as path from 'path'
 import { promisify } from 'util'
 
+import { GQLGenerator } from '../generator'
 import {
-  GQLGenerator,
   loadSchemaFromPath,
   loadSchemaFromURL,
   loadSchemaFromSDL,
-} from '@kayu/codegen'
-
+} from '../schema'
 import { isURL } from '../utils'
 
 /* Utils */

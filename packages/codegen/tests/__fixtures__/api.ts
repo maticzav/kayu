@@ -16,18 +16,17 @@ import {
   PerformInput,
   PerformOutput,
   perform,
-} from './../../src'
+} from '@kayu/client'
 
 /* Scalars */
 
-import * as codecs from './codecs'
 export type Scalar = {
   ID: string
   String: string
   Float: number
   Int: number
   Boolean: boolean
-  Date: codecs.DateCodec
+  Date: any
 }
 
 const ScalarMock = {
@@ -36,7 +35,7 @@ const ScalarMock = {
   Float: 3.14,
   Int: 92,
   Boolean: true,
-  Date: codecs.DateCodec.mock,
+  Date: 'any' as any,
 }
 const ScalarDecoder = {
   ID: (val: string) => val,
@@ -44,7 +43,7 @@ const ScalarDecoder = {
   Float: (val: number) => val,
   Int: (val: number) => val,
   Boolean: (val: boolean) => val,
-  Date: codecs.DateCodec.decode,
+  Date: (val: any) => val,
 }
 
 /* Types */

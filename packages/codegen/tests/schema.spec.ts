@@ -4,8 +4,11 @@ import * as path from 'path'
 
 import { apollo } from '../../../server/src'
 
-import { loadSchemaFromPath, loadSchemaFromURL } from '../src'
-import { loadSchemaFromSDL } from '../src/schema'
+import {
+  loadSchemaFromSDL,
+  loadSchemaFromPath,
+  loadSchemaFromURL,
+} from '../src/schema'
 
 /* Configuration */
 
@@ -14,7 +17,7 @@ const FIXTURES = path.resolve(__dirname, './__fixtures__')
 
 /* Tests */
 
-describe('schema', () => {
+describe('schema loader', () => {
   let url = `http://localhost:${PORT}/graphql`
   let server: Server
 
@@ -43,6 +46,13 @@ describe('schema', () => {
 
   test('loads from GraphQL endpoint', async () => {
     const schema = await loadSchemaFromURL(url)
+
+    expect(schema).toMatchSnapshot()
+  })
+
+  test('loads from local cache', async () => {
+    const cache = path.resolve(FIXTURES, './schema.json')
+    const schema = await loadSchemaFromPath(cache)
 
     expect(schema).toMatchSnapshot()
   })

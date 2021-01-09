@@ -13,11 +13,7 @@ const API_PATH = path.resolve(FIXTURES, './api.ts')
 
 /* Tests */
 
-describe('bin', () => {
-  test('finds the root of the project', async () => {
-    expect(await pkg(FIXTURES)).toBe(FIXTURES)
-  })
-
+describe('generator', () => {
   test('generates API using schema', async () => {
     await generate(FIXTURES)
 
@@ -39,4 +35,11 @@ describe('bin', () => {
     const code = await readfile(API_PATH, { encoding: 'utf-8' })
     expect(code).toMatchSnapshot()
   })
+})
+
+/* Utility functions */
+
+test('finds the root of the project', async () => {
+  const SDL_ROOT = path.resolve(FIXTURES, './sdl')
+  expect(await pkg(SDL_ROOT)).toBe(SDL_ROOT)
 })

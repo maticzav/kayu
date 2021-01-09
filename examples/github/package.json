@@ -1,10 +1,8 @@
 {
   "name": "github-example",
   "private": true,
-  "scripts": {
-    "build": "yarn g:tsc"
-  },
   "dependencies": {
-    "@kayu/client": "workspace:*"
+    "@kayu/client": "workspace:*",
+    "@kayu/codegen": "workspace:*"
   }
 }
