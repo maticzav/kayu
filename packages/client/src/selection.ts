@@ -167,12 +167,16 @@ export class SelectionSet<TypeLock, Type> {
   /* Methods */
 
   /**
-   * Decodes selection set using a given data.
+   * Decodes selection set using a given data. We assume that
+   * any error thrown in the decoders/selections refers to a badpayload
+   * error.
    */
   decode(data: TypeLock): Type {
     const fields = new Fields<TypeLock>(data)
     return this._decoder(fields)
   }
+
+  /* Utility functions */
 
   /**
    * Turns a selection into a list value.
@@ -211,6 +215,29 @@ export class SelectionSet<TypeLock, Type> {
             return this.decode(data)
           }
           return null
+      }
+    })
+  }
+
+  /**
+   * Turns a selection into a nullable but makes sure it is always present.
+   * Use this only when you absolutely know that the value will be non-null.
+   */
+  get nonNullOrFail(): SelectionSet<TypeLock | null, Type> {
+    return selection<TypeLock | null, Type>((decoder) => {
+      /* Selection */
+      decoder.select(...this.fields)
+
+      /* Decoder */
+      switch (decoder.data.type) {
+        case 'fetching':
+          return this.mock
+        case 'fetched':
+          let data = decoder.data.response.raw<TypeLock | null>()
+          if (data !== null) {
+            return this.decode(data)
+          }
+          throw new Error(`Bad payload. Expected non-null value.`)
       }
     })
   }

@@ -13,7 +13,8 @@ import {
   nullable,
   list,
   OperationType,
-  SendInput,
+  PerformInput,
+  PerformOutput,
   perform,
 } from '@kayu/client'
 
@@ -163,8 +164,8 @@ export type InputObject = {
 /* Operations */
 
 export async function send<TypeLock extends { __typename: 'Query' }, Type>(
-  opts: SendInput<TypeLock, Type>,
-): Promise<[Type] | [null, Error]> {
+  opts: Omit<PerformInput<TypeLock, Type>, 'operation'>,
+): Promise<PerformOutput<Type>> {
   return perform({ operation: opts.selection.operation!, ...opts })
 }
 
