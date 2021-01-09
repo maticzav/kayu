@@ -327,7 +327,8 @@ export class GQLGenerator {
       'list',
       // Http
       'OperationType',
-      'SendInput',
+      'PerformInput',
+      'PerformOutput',
       'perform',
     ]
 
@@ -711,7 +712,7 @@ export class GQLGenerator {
      */
 
     /* prettier-ignore */
-    code.push(`export async function send<TypeLock extends ${typelock}, Type>(opts: SendInput<TypeLock, Type>): Promise<[Type] | [null, Error]> {`)
+    code.push(`export async function send<TypeLock extends ${typelock}, Type>(opts: Omit<PerformInput<TypeLock, Type>, "operation">): Promise<PerformOutput<Type>> {`)
     /* prettier-ignore */
     code.push(`return perform({ operation: opts.selection.operation!, ...opts })`)
     code.push(`}`)
