@@ -3,8 +3,8 @@ import { IntrospectionSchema } from 'graphql'
 import * as path from 'path'
 import { promisify } from 'util'
 
-import { GQLGenerator, loadSchemaFromPath, loadSchemaFromURL } from '../src'
-import { defined } from '../src/utils'
+import { GQLGenerator } from '../src/generator'
+import { loadSchemaFromPath } from '../src/schema'
 
 const writefile = promisify(fs.writeFile)
 const prettier = require('../../../prettier.config')

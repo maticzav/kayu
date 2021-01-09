@@ -3,9 +3,10 @@ import { IntrospectionSchema } from 'graphql'
 import * as path from 'path'
 import { promisify } from 'util'
 
-import { GQLGenerator, loadSchemaFromPath } from '@kayu/codegen'
+import { GQLGenerator } from '@kayu/codegen'
 
 const writefile = promisify(fs.writeFile)
+const readfile = promisify(fs.readFile)
 const prettier = require('../../../prettier.config')
 
 /* Configuration */
@@ -20,7 +21,8 @@ const CORE_PATH = path.resolve(__dirname, '../src/')
 const CODECS_PATH = path.resolve(FIXTURES, './codecs')
 
 export default async () => {
-  let schema: IntrospectionSchema = await loadSchemaFromPath(SCHEMA_PATH)
+  const data = await readfile(SCHEMA_PATH, { encoding: 'utf-8' })
+  const schema: IntrospectionSchema = JSON.parse(data)
 
   /**
    * Construct the generator.

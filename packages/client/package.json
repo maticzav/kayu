@@ -10,11 +10,9 @@
   ],
   "scripts": {
     "build": "yarn g:tsc --build && echo 'done building client'",
-    "prepack": "yarn build",
-    "postinstall": "node dist/bin/index.js"
+    "prepack": "yarn build"
   },
   "dependencies": {
-    "@kayu/codegen": "workspace:*",
     "cross-fetch": "^3.0.6",
     "object-hash": "^2.1.1"
   },
@@ -24,6 +22,9 @@
     "express": "^4.17.1",
     "graphql": "^15.4.0",
     "multilines": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@kayu/codegen": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

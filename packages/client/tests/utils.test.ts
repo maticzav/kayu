@@ -1,4 +1,4 @@
-import { defined, indent, isURL } from '../src/utils'
+import { defined, indent } from '../src/utils'
 
 describe('utils', () => {
   test('indent', () => {
@@ -8,10 +8,5 @@ describe('utils', () => {
   test('defined', () => {
     expect(defined('Matic')).toBeTruthy()
     expect(defined(undefined)).toBeFalsy()
-  })
-
-  test('isURL', () => {
-    expect(isURL('https://github.com')).toBeTruthy()
-    expect(isURL('whatever')).toBeFalsy()
   })
 })
