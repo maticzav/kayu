@@ -1,5 +1,14 @@
 # @kayu/client
 
+## 0.1.3
+
+### Patch Changes
+
+- 8344393: - move generator to generator and decrease the size of client package
+  - implement utility functions (`nonNullOrFail`, `nullable`, `list`)
+- Updated dependencies [8344393]
+  - @kayu/codegen@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
